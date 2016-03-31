@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             try{
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 bm.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-//                fos.write(data
                 fos.close();
                 camera.stopPreview();
                 camera.startPreview();

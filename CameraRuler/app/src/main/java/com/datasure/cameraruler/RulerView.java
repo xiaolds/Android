@@ -35,15 +35,15 @@ public class RulerView extends View {
     public RulerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        measuredHeight = attrs.getAttributeResourceValue(null,"marginH",0);
-        measuredWidth = attrs.getAttributeResourceValue(null, "marginW", 0);
-
-        width = attrs.getAttributeResourceValue(null, "width", 0);
-        height = attrs.getAttributeResourceValue(null, "height", 0);
-        int textId = attrs.getAttributeResourceValue(null, "text", 0);
-
-
-        text = context.getResources().getText(textId).toString();
+//        measuredHeight = attrs.getAttributeResourceValue(null,"marginH",0);
+//        measuredWidth = attrs.getAttributeResourceValue(null, "marginW", 0);
+//
+//        width = attrs.getAttributeResourceValue(null, "width", 0);
+//        height = attrs.getAttributeResourceValue(null, "height", 0);
+//        int textId = attrs.getAttributeResourceValue(null, "text", 0);
+//
+//
+//        text = context.getResources().getText(textId).toString();
 
     }
 

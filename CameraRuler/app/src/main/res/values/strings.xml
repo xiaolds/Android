@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CameraRuler</string>
+    <string name="title_activity_ruler">RulerActivity</string>
 </resources>

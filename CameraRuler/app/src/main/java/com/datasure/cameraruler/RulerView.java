@@ -29,7 +29,7 @@ public class RulerView extends View {
 
     private int width = 200;              //padding width
     private int height = 200;             //padding height
-    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paint;
 
     //position
     private float recL;
@@ -43,6 +43,9 @@ public class RulerView extends View {
     int mode = DRAG;
     private String text;            //the text will draw on the canvas
     private boolean isInit = false;
+
+    private int lastX;
+    private int lastY;
 
     /**
      * Constructor
@@ -77,20 +80,23 @@ public class RulerView extends View {
             }   //for
         }   //if
         array.recycle();
-        init();
     }
 
     /*
-    初始化画笔
+    初始化位置
      */
     private void init(){
         //计算最开始的位置,BUG
         //TODO
-        recL = getLeft() - width/2;
-        recT = getTop() - height/2;
+        //initial the painter to paint on the canvas
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        recL = getLeft();
+        recT = getTop();
         recR = recL + width;
         recB = recT + height;
         isInit = true;
+        Log.e("initRecX", String.valueOf(recL) +";" +  String.valueOf(recR));
+        Log.e("initRecY", String.valueOf(recT) + ";" + String.valueOf(recB));
     }
 
     /**
@@ -100,7 +106,8 @@ public class RulerView extends View {
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(width, height);
+//        setMeasuredDimension(width, height);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     /**
@@ -115,24 +122,37 @@ public class RulerView extends View {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:   //点击事件
                 mode = DRAG;
+                lastX = (int)event.getRawX();
+                lastY = (int)event.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:   //移动事件
                 //拖拽
                 if(mode == DRAG){
                     //重新计算位置
 //                    changeLayout(event);
-                    recB += 10;
-                    recT += 10;
+                    int dx = (int)event.getRawX() - lastX;
+                    int dy = (int)event.getRawY() - lastY;
+
+                    recL = this.getLeft() + dx;
+                    recT = this.getTop() + dy;
+
+                    recR = recL + width;
+                    recB = recT + height;
+
                     Log.e("Layout_width", String.valueOf(getMeasuredWidth()));
                     Log.e("Layout_height", String.valueOf(getMeasuredHeight()));
                     Log.e("Layout_Left",String.valueOf(getLeft()));
                     Log.e("Layout_Top", String.valueOf(getTop()));
-                    Log.e("recL",String.valueOf(recL));
-                    this.layout((int)recL, (int)recT, (int)recR, (int)recB);    //layout()会调用onDraw()方法
+                    Log.e("recL", String.valueOf(recL));
+                    this.layout((int) recL, (int) recT, (int) recR, (int) recB);    //layout()会调用onDraw()方法
+
+                    //revalue the lastX and lastY
+                    lastX = (int)event.getRawX();
+                    lastY = (int)event.getRawY();
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                //拿起
+                //pick up
                 mode = DRAG;
                 break;
             default: break;
@@ -150,11 +170,17 @@ public class RulerView extends View {
         recB += recT + height;
     }
 
-
+   /* @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+//        super.onLayout(changed, left, top, right, bottom);
+        if(changed){
+            //if the layout has changed, then recaculate the position of the layout
+        }
+    }*/
 
     /**
      * 绘制一个绿色的框
-     * @param canvas
+     * @param canvas paint on the canvas
      */
     @Override
     protected void onDraw(Canvas canvas) {
@@ -164,6 +190,5 @@ public class RulerView extends View {
         //paint the rec
         paint.setColor(Color.GREEN);
         canvas.drawRect(rect, paint);
-
     }
 }

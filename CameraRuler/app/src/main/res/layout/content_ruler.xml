@@ -9,8 +9,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        MyView:height="200dp"
-        MyView:width="200dp"
+        MyView:height="400dp"
+        MyView:width="400dp"
         android:id="@+id/ruler" />
 
 </RelativeLayout>

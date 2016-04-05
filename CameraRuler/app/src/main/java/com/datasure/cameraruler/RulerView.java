@@ -47,6 +47,14 @@ public class RulerView extends View {
     private int lastX;
     private int lastY;
 
+    private static final int TOUCH_AREA_ZOOM = 40;  //the area which can be touched for zooming the rectangle;
+
+    //通过两条线将方块分为四个象限
+    private static final int CENTER = 0X1;
+    private static final int RIGHT = 0x3;
+    private static final int BUTTOM = 0x4;
+    private static final int OUTTER = 0x2;
+
     /**
      * Constructor
      * @param context
@@ -86,8 +94,6 @@ public class RulerView extends View {
     初始化位置
      */
     private void init(){
-        //计算最开始的位置,BUG
-        //TODO
         //initial the painter to paint on the canvas
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         recL = getLeft();
@@ -95,8 +101,6 @@ public class RulerView extends View {
         recR = recL + width;
         recB = recT + height;
         isInit = true;
-        Log.e("initRecX", String.valueOf(recL) +";" +  String.valueOf(recR));
-        Log.e("initRecY", String.valueOf(recT) + ";" + String.valueOf(recB));
     }
 
     /**
@@ -128,22 +132,38 @@ public class RulerView extends View {
             case MotionEvent.ACTION_MOVE:   //移动事件
                 //拖拽
                 if(mode == DRAG){
-                    //重新计算位置
-//                    changeLayout(event);
+
+                    //recalculate the position
                     int dx = (int)event.getRawX() - lastX;
                     int dy = (int)event.getRawY() - lastY;
 
-                    recL = this.getLeft() + dx;
-                    recT = this.getTop() + dy;
+                    //判断落点的位置
+                    int position = judgeTouchArea(lastX, lastY);
+                    Log.e("Position",String.valueOf(position));
 
+                    switch (position){
+                        case CENTER:
+                            recL = this.getLeft() + dx;
+                            recT = this.getTop() + dy;
+                            break;
+                        case RIGHT:
+                            width += dx;
+                            break;
+                        case BUTTOM:
+                            height += dy;
+                            break;
+                        case OUTTER:
+                            width += dx;
+                            height += dy;
+                            break;
+                        default:
+                            break;
+                    }
                     recR = recL + width;
                     recB = recT + height;
 
-                    Log.e("Layout_width", String.valueOf(getMeasuredWidth()));
-                    Log.e("Layout_height", String.valueOf(getMeasuredHeight()));
-                    Log.e("Layout_Left",String.valueOf(getLeft()));
-                    Log.e("Layout_Top", String.valueOf(getTop()));
-                    Log.e("recL", String.valueOf(recL));
+                    //printLog
+                    printLog();
                     this.layout((int) recL, (int) recT, (int) recR, (int) recB);    //layout()会调用onDraw()方法
 
                     //revalue the lastX and lastY
@@ -160,23 +180,40 @@ public class RulerView extends View {
         return true;
     }
 
-    /**
-     * 根据手指落点改变Ruler位置
-     */
-    private void changeLayout(MotionEvent event){
-        recL += (event.getX() - event.getRawX());
-        recT += (event.getY() - event.getRawY());
-        recR = recL + width;
-        recB += recT + height;
+    private void printLog(){
+        Log.e("Layout_width", String.valueOf(getMeasuredWidth()));
+        Log.e("Layout_height", String.valueOf(getMeasuredHeight()));
+        Log.e("Layout_Left",String.valueOf(getLeft()));
+        Log.e("Layout_Top", String.valueOf(getTop()));
+        Log.e("recL", String.valueOf(recL));
+        Log.e("width", String.valueOf(width));
+        Log.e("height", String.valueOf(height));
     }
 
-   /* @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-//        super.onLayout(changed, left, top, right, bottom);
-        if(changed){
-            //if the layout has changed, then recaculate the position of the layout
+    //判断落点位置
+    private int judgeTouchArea(int lastX, int lastY) {
+        if(width < TOUCH_AREA_ZOOM || height < TOUCH_AREA_ZOOM){
+            return -1;
         }
-    }*/
+        if(lastX > recL && lastX < (recR - TOUCH_AREA_ZOOM)
+                && lastY > recT && lastY < (recB - TOUCH_AREA_ZOOM)){
+            return CENTER;  //1
+        }
+        else if(lastX > (recR - TOUCH_AREA_ZOOM) && lastX < recR
+                && lastY > recT && lastY < (recB - TOUCH_AREA_ZOOM)){
+            return RIGHT;  //
+        }
+        else if(lastX > recL && lastX < (recR - TOUCH_AREA_ZOOM)
+                && lastY > (recB - TOUCH_AREA_ZOOM) && lastY < recB){
+            return BUTTOM;
+        }
+        else if(lastX > (recR - TOUCH_AREA_ZOOM) && lastX < recR
+                && lastY > (recB - TOUCH_AREA_ZOOM) && lastY < recB){
+            return  OUTTER;
+        }
+
+        return -1;
+    }
 
     /**
      * 绘制一个绿色的框

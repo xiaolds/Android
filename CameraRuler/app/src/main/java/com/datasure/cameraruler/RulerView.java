@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.Arrays;
+
 /**
  *
  * 用于在照片墙中显示绘制的尺子
@@ -27,8 +29,8 @@ import android.view.View;
 public class RulerView extends View {
 
 
-    private int width = 200;              //padding width
-    private int height = 200;             //padding height
+    private int width;              //padding width
+    private int height;             //padding height
     private Paint paint;
 
     //position
@@ -60,11 +62,11 @@ public class RulerView extends View {
      * @param context
      */
     public RulerView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public RulerView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context,attrs,0);
     }
 
     public RulerView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -73,6 +75,7 @@ public class RulerView extends View {
         final Resources.Theme theme = context.getTheme();
         TypedArray array = theme.obtainStyledAttributes(attrs, R.styleable.RulerView,
                 defStyleAttr,0);
+        Log.e("Array", array.toString());
         if(null != array){
             int n = array.getIndexCount();
             for(int i = 0; i < n; i++){
@@ -87,12 +90,14 @@ public class RulerView extends View {
                 }   //switch
             }   //for
         }   //if
+        Log.e("initWidth", String.valueOf(width));
+        Log.e("initHeight", String.valueOf(height));
         array.recycle();
     }
 
     /*
-    初始化位置
-     */
+        初始化位置
+         */
     private void init(){
         //initial the painter to paint on the canvas
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -103,16 +108,6 @@ public class RulerView extends View {
         isInit = true;
     }
 
-    /**
-     * 确定绘制的元素的大小
-     * @param widthMeasureSpec
-     * @param heightMeasureSpec
-     */
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        setMeasuredDimension(width, height);
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
 
     /**
      * 响应触摸事件,共两种，一种是移动，一种是改变大小
@@ -130,7 +125,7 @@ public class RulerView extends View {
                 lastY = (int)event.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:   //移动事件
-                //拖拽
+                //drag
                 if(mode == DRAG){
 
                     //recalculate the position
@@ -138,7 +133,7 @@ public class RulerView extends View {
                     int dy = (int)event.getRawY() - lastY;
 
                     //判断落点的位置
-                    int position = judgeTouchArea(lastX, lastY);
+                    int position = judgeTouchArea((int)event.getRawX(), (int)event.getRawY());
                     Log.e("Position",String.valueOf(position));
 
                     switch (position){
@@ -147,10 +142,14 @@ public class RulerView extends View {
                             recT = this.getTop() + dy;
                             break;
                         case RIGHT:
-                            width += dx;
+                            if(width > TOUCH_AREA_ZOOM){
+                                width += dx;
+                            }
                             break;
                         case BUTTOM:
-                            height += dy;
+                            if(height > TOUCH_AREA_ZOOM){
+                                height += dy;
+                            }
                             break;
                         case OUTTER:
                             width += dx;
@@ -183,14 +182,18 @@ public class RulerView extends View {
     private void printLog(){
         Log.e("Layout_width", String.valueOf(getMeasuredWidth()));
         Log.e("Layout_height", String.valueOf(getMeasuredHeight()));
-        Log.e("Layout_Left",String.valueOf(getLeft()));
-        Log.e("Layout_Top", String.valueOf(getTop()));
-        Log.e("recL", String.valueOf(recL));
+        Log.e("Left",String.valueOf(getLeft()));
+        Log.e("Top", String.valueOf(getTop()));
         Log.e("width", String.valueOf(width));
         Log.e("height", String.valueOf(height));
     }
 
-    //判断落点位置
+    /**
+     * judge which zone the finger has pointed
+     * @param lastX
+     * @param lastY
+     * @return
+     */
     private int judgeTouchArea(int lastX, int lastY) {
         if(width < TOUCH_AREA_ZOOM || height < TOUCH_AREA_ZOOM){
             return -1;
@@ -224,8 +227,12 @@ public class RulerView extends View {
         if(!isInit){init();}
         //change the size
         RectF rect = new RectF(recL, recT, recR, recB);
+        printLog();
         //paint the rec
         paint.setColor(Color.GREEN);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(TOUCH_AREA_ZOOM / 2);
+        paint.setAlpha(0x240);
         canvas.drawRect(rect, paint);
     }
 }

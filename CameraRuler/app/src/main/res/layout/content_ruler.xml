@@ -8,9 +8,8 @@
     <com.datasure.cameraruler.RulerView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        MyView:height="400dp"
-        MyView:width="400dp"
+        MyView:height="400px"
+        MyView:width="400px"
         android:id="@+id/ruler" />
 
 </RelativeLayout>

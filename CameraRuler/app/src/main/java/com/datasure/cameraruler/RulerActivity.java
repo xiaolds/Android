@@ -56,5 +56,6 @@ public class RulerActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        oriente.destory();
     }
 }

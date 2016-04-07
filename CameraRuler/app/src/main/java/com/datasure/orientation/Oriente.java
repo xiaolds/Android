@@ -76,6 +76,12 @@ public class Oriente {
         manager.registerListener(new MySensorListener(),magnetic,Sensor.TYPE_MAGNETIC_FIELD);
     }
 
+    public void destory(){
+        if(manager != null){
+            manager = null;
+        }
+    }
+
 
     /**
      * caculate the orientation data

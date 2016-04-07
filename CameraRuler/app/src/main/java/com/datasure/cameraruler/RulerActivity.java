@@ -6,13 +6,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.datasure.orientation.Oriente;
+import com.datasure.orientation.OrientationWrapper;
 
 import java.util.Arrays;
 
 public class RulerActivity extends AppCompatActivity {
 
-    private Oriente oriente;
+    private OrientationWrapper oriente;
     private Button dataBut;
     private TextView data;
     private float[] result;
@@ -29,7 +29,7 @@ public class RulerActivity extends AppCompatActivity {
 
 
         //initial the Orientation
-        oriente = new Oriente(this);
+        oriente = new OrientationWrapper(this);
         oriente.init();
 
 

@@ -128,10 +128,8 @@ public class MainActivity extends AppCompatActivity {
             String fileName = "DICM" + System.currentTimeMillis() + ".jpg";
             File pictureFile = new File(Environment.getExternalStorageDirectory(),
                     fileName);
-            Log.e("PictureFile", pictureFile.getAbsolutePath());
 
             if(pictureFile == null){
-                Log.d("PictureCallback","PictureCallback is Error " );
                 return;
             }
 

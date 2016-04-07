@@ -10,7 +10,7 @@ import android.hardware.SensorManager;
  * Created by Lids on 2016/4/7.
  * Use Orientation sensor to get data
  */
-public class Oriente {
+public class OrientationWrapper {
 
     /**
      * Sensor Manager
@@ -44,7 +44,7 @@ public class Oriente {
     /**
      * construct
      */
-    public Oriente(Context context) {
+    public OrientationWrapper(Context context) {
         this.context = context;
         init();
     }

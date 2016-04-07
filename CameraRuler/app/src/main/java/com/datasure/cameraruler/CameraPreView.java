@@ -85,7 +85,6 @@ public class CameraPreView extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
-    /****** getter and setter**********/
     public GestureDetector getGesture() {
         return gesture;
     }
@@ -100,18 +99,6 @@ public class CameraPreView extends SurfaceView implements SurfaceHolder.Callback
         //触摸的时候动态调整对焦区域
         //获取Parameters
         final Camera.Parameters params = mCamera.getParameters();
-
-//        Log.d("FocusArea",String.valueOf(params.getMaxNumFocusAreas()));
-//        if(params.getMaxNumMeteringAreas() > 0){
-//
-//            List<Camera.Area> meteringAreas = new ArrayList<Camera.Area>();
-//
-//            Rect areaRect1 = new Rect(-100, -100, 100, 100);    // specify an area in center of image
-//            meteringAreas.add(new Camera.Area(areaRect1, 600)); // set weight to 60%
-//            Rect areaRect2 = new Rect(800, -1000, 1000, -800);  // specify an area in upper right of image
-//            meteringAreas.add(new Camera.Area(areaRect2, 400)); // set weight to 40%
-//            params.setMeteringAreas(meteringAreas);
-//        }
         params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         mCamera.setParameters(params);
 
@@ -131,6 +118,9 @@ public class CameraPreView extends SurfaceView implements SurfaceHolder.Callback
         });
         return true;
     }
+
+    /****** getter and setter**********/
+
 
     @Override
     public boolean onDown(MotionEvent e) {

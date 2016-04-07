@@ -35,41 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Button capture;
 
 
-//    private boolean safeToTakePicture = false;
 
-    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-
-            String fileName = "DICM" + System.currentTimeMillis() + ".jpg";
-            File pictureFile = new File(Environment.getExternalStorageDirectory(),
-                    fileName);
-            Log.e("PictureFile", pictureFile.getAbsolutePath());
-
-            if(pictureFile == null){
-                Log.d("PictureCallback","PictureCallback is Error " );
-                return;
-            }
-
-            //利用位图缓冲
-            final Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-
-            try{
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                bm.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                fos.close();
-                camera.stopPreview();
-                camera.startPreview();
-            }
-            catch (FileNotFoundException e){
-                e.printStackTrace();
-            }
-            catch (IOException ioe){
-                ioe.printStackTrace();
-            }
-
-        }
-    };
 
 
 
@@ -90,23 +56,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        //检查是否含有摄像头
+        //Check is there a camera
         if(!checkCameraHardware(this)){
             return;
         }
-        //获取摄像头
+        //get the camera
         camera = getCameraInstance();
-        //获取SurfaceView
+        //get SurfaceView
         preView = new CameraPreView(this, camera);
-        //获取Layout
+        //get Layout
         FrameLayout layout = (FrameLayout) findViewById(R.id.camera_preview);
         layout.addView(preView);
-        //获取按钮，并为按钮添加单击事件
+        //get the Button and set ClickListener
         capture = (Button) findViewById(R.id.button_capture);
         capture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //拍摄
+                //capture
                 camera.takePicture(null, null, mPicture);
             }
         });
@@ -114,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 获取相机实例
-     * @return
+     * get the instance of camera
+     * @return the instance of camera
      */
     public static Camera getCameraInstance(){
         Camera camera = null;
@@ -129,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 判断本机是否含有摄像头
+     * check is there a camera
      * @param context
      * @return
      */
@@ -144,13 +110,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 重写触摸事件
+     * touch event
      *
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return preView.getGesture().onTouchEvent(event);
     }
+
+    /**
+     * the callback when tack picture
+     */
+    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+
+            String fileName = "DICM" + System.currentTimeMillis() + ".jpg";
+            File pictureFile = new File(Environment.getExternalStorageDirectory(),
+                    fileName);
+            Log.e("PictureFile", pictureFile.getAbsolutePath());
+
+            if(pictureFile == null){
+                Log.d("PictureCallback","PictureCallback is Error " );
+                return;
+            }
+
+            //use bitmap cache
+            final Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+            try{
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.close();
+                camera.stopPreview();
+                camera.startPreview();
+            }
+            catch (FileNotFoundException e){
+                e.printStackTrace();
+            }
+            catch (IOException ioe){
+                ioe.printStackTrace();
+            }
+
+        }
+    };
 }
 
 

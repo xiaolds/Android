@@ -12,4 +12,19 @@
         MyView:width="400px"
         android:id="@+id/ruler" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="data"
+        android:textSize="30dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/data"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/data_but"
+        android:text="BUTTON"
+        android:layout_below="@id/data"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

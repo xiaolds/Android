@@ -11,6 +11,7 @@
         android:layout_weight="1"
         />
 
+
     <Button
         android:id="@+id/button_capture"
         android:text="Capture"
@@ -20,10 +21,5 @@
         android:layout_alignParentRight="true"
         />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        android:id="@+id/but1"
-        />
+
 </RelativeLayout>

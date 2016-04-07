@@ -49,7 +49,7 @@ public class RulerView extends View {
     private int lastX;
     private int lastY;
 
-    private static final int TOUCH_AREA_ZOOM = 40;  //the area which can be touched for zooming the rectangle;
+    private static final int TOUCH_AREA_ZOOM = 80;  //the area which can be touched for zooming the rectangle;
 
     //通过两条线将方块分为四个象限
     private static final int CENTER = 0X1;
@@ -231,7 +231,7 @@ public class RulerView extends View {
         //paint the rec
         paint.setColor(Color.GREEN);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(TOUCH_AREA_ZOOM / 2);
+        paint.setStrokeWidth(20);
         paint.setAlpha(0x240);
         canvas.drawRect(rect, paint);
     }

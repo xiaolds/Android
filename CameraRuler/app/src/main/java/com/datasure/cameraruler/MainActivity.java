@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private CameraPreView preView;
     private Button capture;
 
-    private Button but1;    //just for other View
 
 //    private boolean safeToTakePicture = false;
 
@@ -84,26 +83,12 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
-        //TODO
-        but1 = (Button) findViewById(R.id.but1);
-
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-
-
-        //TODO
-        but1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClassName("com.datasure.cameraruler", "RulerActivity");
-                MainActivity.this.startActivity(intent);
-            }
-        });
 
         //检查是否含有摄像头
         if(!checkCameraHardware(this)){

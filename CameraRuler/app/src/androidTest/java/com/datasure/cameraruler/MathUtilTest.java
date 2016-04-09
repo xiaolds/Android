@@ -2,7 +2,7 @@ package com.datasure.cameraruler;
 
 import android.test.InstrumentationTestCase;
 
-import com.datasure.com.datasure.util.MathUtil;
+import com.datasure.util.MathUtil;
 
 /**
  * Created by Lids on 2016/4/7.

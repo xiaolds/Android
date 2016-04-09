@@ -1,4 +1,4 @@
-package com.datasure.com.datasure.util;
+package com.datasure.util;
 
 /**
  * This Class is Created to calculate the height</br>

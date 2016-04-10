@@ -31,7 +31,6 @@ public class OrientationWrapper {
     private float[] mageticValue;
 
     private float[] result;
-
     /**
      * the context who call the class
      */

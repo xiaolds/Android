@@ -1,45 +1,33 @@
 package com.datasure.cameraruler;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.OrientationHelper;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.datasure.orientation.DistanceFresher;
+import com.datasure.orientation.HeightFresher;
 import com.datasure.orientation.OrientationWrapper;
 import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,12 +37,16 @@ public class MainActivity extends AppCompatActivity {
     private TextView state;
     private TextView config;
     private TextView distanceText;
-    private DistanceFresher fresher;
+    private DistanceFresher distanceFresher;
+    private HeightFresher heightFresher;
+    private ImageButton btnTotalH;
+    private TextView heightText;
 
     //use the Orientation Sensor
     private OrientationWrapper ori;
 //    private float[] result; //store the result of Orientation sensor
     private boolean isGetDistance = false;
+    private boolean isGetHeight = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         state = (TextView) findViewById(R.id.id_btn_state);
         config = (TextView) findViewById(R.id.id_config_data);
         distanceText = (TextView) findViewById(R.id.id_distance);
+        btnTotalH = (ImageButton) findViewById(R.id.id_btn_totalH);
+        heightText = (TextView) findViewById(R.id.id_txt_totalH);
     }
 
 
@@ -96,19 +90,27 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //get Distance & change state of Button
                 changeBtnState();
-
 //                camera.takePicture(null, null, mPicture);     //capture
+            }
+        });
+
+        btnTotalH.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeHbtnState();
             }
         });
 
         //init sensor
         ori.init();
-        Log.e("MainActivity","Orientation sensor is running:" + ori.isReady());
-
         //when ori has initialed,start calculate the distance
-        fresher = new DistanceFresher(distanceText, ori);
+        distanceFresher = new DistanceFresher(distanceText, ori);
         //start listen and fresh the textView
-        fresher.startListen();
+        distanceFresher.initial();
+        distanceFresher.startListen();
+
+        heightFresher = new HeightFresher(heightText, ori);
+        heightFresher.initial();
         //init config text
         initConfig();
     }
@@ -136,13 +138,37 @@ public class MainActivity extends AppCompatActivity {
             capture.setBackgroundResource(R.mipmap.ic_action_reload);
             state.setText(R.string.capture_clicked);
             state.setTextColor(Color.RED);
-            fresher.stopListen();
+            distanceFresher.stopListen();
+            Config.setDistance(distanceFresher.getData());
+            heightFresher.startListen();
+            //display the Button
+            btnTotalH.setVisibility(View.VISIBLE);
+            heightText.setVisibility(View.VISIBLE);
         }
         else {
             capture.setBackgroundResource(R.mipmap.ic_action_camera_green);
             state.setText(R.string.capture_unclicked);
             state.setTextColor(Color.BLUE);
-            fresher.startListen();
+            distanceFresher.startListen();
+            heightFresher.stopListen();
+            btnTotalH.setVisibility(View.INVISIBLE);
+            heightText.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /**
+     * change the state of Button which can get Height
+     */
+    public void changeHbtnState(){
+        isGetHeight = !isGetHeight;
+        if(isGetHeight){
+            heightFresher.stopListen();
+            Config.setTotalH(heightFresher.getData());
+            Log.e("HeightFresher","stop");
+        }
+        else {
+            heightFresher.startListen();
+            Log.e("HeightFresher","start");
         }
 
     }
@@ -151,11 +177,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         ori.destory();
-        if(fresher.isListen()){
-            fresher.stopListen();
-            fresher.destory();
-        }
-
+        distanceFresher.stopListen();
+        distanceFresher.destroy();
+        heightFresher.stopListen();
+        heightFresher.destroy();
     }
 
     private MathUtil util = MathUtil.getInstance();

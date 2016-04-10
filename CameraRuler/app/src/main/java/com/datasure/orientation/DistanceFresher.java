@@ -5,7 +5,6 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.datasure.cameraruler.R;
 import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
 
@@ -16,41 +15,37 @@ import java.util.TimerTask;
  * 负责刷新位置信息
  * Created by xiaolds on 2016/4/9.
  */
-public class DistanceFresher {
+public class DistanceFresher extends Fresher{
 
-    private boolean isStart = false;    //标记是否开始刷新
-    private TextView disText;           //需要刷新的控件
+    private TextView disText;                       //需要刷新的控件
     private MathUtil util = MathUtil.getInstance();
-    private float[] result;
-    private double distance;
-    private double lastDis;
+    private double data;
+    private double lastData;
+
     private OrientationWrapper ori;
 
+    private Timer timerForDis;
 
-    private Timer timer;
     private Handler handler;
     private static final int REFRESH_TIME = 100;    //100ms
     private static final double ACCURACY = 0.1;
 
     public DistanceFresher(TextView disText, OrientationWrapper ori) {
         this.disText = disText;
-//        this.result = result;
         this.ori = ori;
         handler = new DistanceHandler();
-        timer = new Timer();
-        timer.schedule(task,0,REFRESH_TIME);
     }
 
-    private TimerTask task = new TimerTask(){
+    private TimerTask taskForDis = new TimerTask(){
         @Override
         public void run() {
             //check the distance
-            distance = util.calDistance(ori.getResult()[2]);
-            if(isStart && Math.abs(lastDis - distance) > ACCURACY){
+            data = util.calDistance(ori.getResult()[2]);
+            if(isStart && Math.abs(lastData - data) > ACCURACY){
                 Message message = new Message();
                 message.what = 0x1;
                 handler.sendMessage(message);
-                lastDis = distance;
+                lastData = data;
             }
         }
 
@@ -60,28 +55,21 @@ public class DistanceFresher {
         }
     };
 
-    /**
-     * start listen
-     */
-    public void startListen(){
-        isStart = true;
+
+
+
+    @Override
+    public void initial() {
+        timerForDis = new Timer();
+        timerForDis.schedule(taskForDis,0,REFRESH_TIME);
     }
 
-    /**
-     * stop listen
-     */
-    public void stopListen(){
-        isStart = false;
-        Config.setDistance(distance);
+    public void destroy(){
+        timerForDis.cancel();
     }
 
-    public void destory(){
-        timer.cancel();
-    }
-
-
-    public boolean isListen(){
-        return isStart;
+    public double getData(){
+        return data;
     }
 
 
@@ -94,7 +82,7 @@ public class DistanceFresher {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x1:   //fresh
-                    String string = String.format("%.1f",distance);
+                    String string = String.format("%.1f",data);
                     Log.e("FormatString:", string);
                     disText.setText(string);
                     break;

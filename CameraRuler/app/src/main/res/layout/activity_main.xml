@@ -66,4 +66,24 @@
         android:layout_alignParentBottom="true"
         />
 
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_above="@id/id_config_data"
+        android:id="@+id/id_btn_totalH"
+        android:background="@mipmap/ic_action_android"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:layout_width="80dp"
+        android:layout_height="33dp"
+        android:layout_above="@id/id_btn_totalH"
+        android:id="@+id/id_txt_totalH"
+        android:textColor="#0cc"
+        android:textSize="30dp"
+        android:text="0.0"
+        android:visibility="invisible"
+        android:textAlignment="center"/>
+
 </RelativeLayout>

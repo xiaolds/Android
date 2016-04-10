@@ -5,12 +5,20 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
+
+import java.util.Arrays;
 
 /**
  * Created by Lids on 2016/4/7.
  * Use Orientation sensor to get data
  */
 public class OrientationWrapper {
+
+    /**
+     * mark is the result can be retrived
+     */
+    private boolean isCal = false;
 
     /**
      * Sensor Manager
@@ -37,7 +45,7 @@ public class OrientationWrapper {
      * get the Oriented data calculated by the sensor
      * @return the Orientation data wrapped in a float Array
      */
-    public float[] getResult() {
+    public synchronized float[]  getResult() {
         return result;
     }
 
@@ -65,13 +73,14 @@ public class OrientationWrapper {
         //initial the result Arrays
         acceleValue = new float[3];
         mageticValue = new float[3];
-//        result = new float[3];
+        register();
+        result = new float[3];
     }
 
     /**
      * register the Listener on sensor
      */
-    public void register() {
+    private void register() {
         manager.registerListener(new MySensorListener(),accelerometer,Sensor.TYPE_ACCELEROMETER);
         manager.registerListener(new MySensorListener(),magnetic,Sensor.TYPE_MAGNETIC_FIELD);
     }
@@ -80,6 +89,9 @@ public class OrientationWrapper {
         if(manager != null){
             manager = null;
         }
+        if(isCal){
+            isCal = false;
+        }
     }
 
 
@@ -87,12 +99,19 @@ public class OrientationWrapper {
      * caculate the orientation data
      */
     private void caculateOrientation(){
-        result = new float[3];
-        float[] R = new float[9];
+        synchronized (result){
+            result = new float[3];
+            float[] R = new float[9];
 
-        manager.getRotationMatrix(R, null, acceleValue, mageticValue);
-        manager.getOrientation(R, result);
+            manager.getRotationMatrix(R, null, acceleValue, mageticValue);
+            manager.getOrientation(R, result);
+        }
+        Log.e("OriWrapper result:" , Arrays.toString(result));
+        isCal = true;
+    }
 
+    public boolean isReady(){
+        return isCal;
     }
 
 

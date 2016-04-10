@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -8,17 +9,45 @@
         android:id="@+id/camera_preview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
         />
 
-    <Button
-        android:id="@+id/button_capture"
-        android:text="Capture"
-        android:layout_width="wrap_content"
+    <TextView
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="30dp"
+        android:textStyle="bold"
+        android:id="@+id/id_btn_state"
+        android:textAlignment="center"
+        android:text="@string/capture_unclicked"/>
+
+    <ImageButton
+        android:id="@+id/button_capture"
+        android:background="@mipmap/ic_action_camera_green"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_above="@id/id_btn_state"
         android:layout_alignParentRight="true"
         />
 
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:id="@+id/id_distance"
+        android:text="@string/init_distance"
+        android:layout_above="@id/button_capture"
+        android:layout_alignParentRight="true"
+        android:textAlignment="center"
+        android:textColor="#0cc"
+        />
+
+
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/id_config_data"
+        android:layout_alignParentBottom="true"
+        />
 
 </RelativeLayout>

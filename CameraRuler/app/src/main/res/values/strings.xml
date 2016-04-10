@@ -6,4 +6,5 @@
     <string name="capture_clicked">点击重新获取</string>
 
     <string name="init_distance">0.0</string>
+    <string name="init_config">h:\nH:\nH+h:</string>
 </resources>

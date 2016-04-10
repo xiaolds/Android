@@ -2,8 +2,11 @@ package com.datasure.orientation;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.TextView;
 
+import com.datasure.cameraruler.R;
+import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
 
 import java.util.Timer;
@@ -18,7 +21,8 @@ public class DistanceFresher {
     private boolean isStart = false;    //标记是否开始刷新
     private TextView disText;           //需要刷新的控件
     private MathUtil util = MathUtil.getInstance();
-//    private float[] result;
+    private float[] result;
+    private double distance;
     private double lastDis;
     private OrientationWrapper ori;
 
@@ -34,14 +38,15 @@ public class DistanceFresher {
         this.ori = ori;
         handler = new DistanceHandler();
         timer = new Timer();
+        timer.schedule(task,0,REFRESH_TIME);
     }
 
     private TimerTask task = new TimerTask(){
         @Override
         public void run() {
             //check the distance
-            double distance = util.calDistance(ori.getResult()[2]);
-            if(isStart &&Math.abs(lastDis - distance) > ACCURACY){
+            distance = util.calDistance(ori.getResult()[2]);
+            if(isStart && Math.abs(lastDis - distance) > ACCURACY){
                 Message message = new Message();
                 message.what = 0x1;
                 handler.sendMessage(message);
@@ -60,7 +65,6 @@ public class DistanceFresher {
      */
     public void startListen(){
         isStart = true;
-        timer.schedule(task,0,REFRESH_TIME);
     }
 
     /**
@@ -68,6 +72,10 @@ public class DistanceFresher {
      */
     public void stopListen(){
         isStart = false;
+        Config.setDistance(distance);
+    }
+
+    public void destory(){
         timer.cancel();
     }
 
@@ -86,7 +94,9 @@ public class DistanceFresher {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x1:   //fresh
-                    disText.setText(String.format("%.1f",util.calDistance(ori.getResult()[2])));
+                    String string = String.format("%.1f",distance);
+                    Log.e("FormatString:", string);
+                    disText.setText(string);
                     break;
                 default:
                     break;

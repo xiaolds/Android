@@ -32,21 +32,37 @@
         />
 
     <TextView
-        android:layout_width="100dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="34dp"
         android:id="@+id/id_distance"
         android:text="@string/init_distance"
+        android:textSize="30dp"
+        android:textStyle="bold"
         android:layout_above="@id/button_capture"
         android:layout_alignParentRight="true"
         android:textAlignment="center"
+        android:paddingLeft="0dp"
         android:textColor="#0cc"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:text="L："
+        android:textColor="#0cc"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:layout_alignTop="@id/id_distance"
+        android:layout_toLeftOf="@id/id_distance"/>
 
 
     <TextView
-        android:layout_width="100dp"
+        android:layout_width="120dp"
         android:layout_height="100dp"
         android:id="@+id/id_config_data"
+        android:text="@string/init_config"
+        android:textStyle="bold"
+        android:textSize="25dp"
+        android:textColor="#c1c"
         android:layout_alignParentBottom="true"
         />
 

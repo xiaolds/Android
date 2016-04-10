@@ -31,6 +31,7 @@ public class OrientationWrapper {
     private float[] mageticValue;
 
     private float[] result;
+
     /**
      * the context who call the class
      */
@@ -106,7 +107,6 @@ public class OrientationWrapper {
             manager.getRotationMatrix(R, null, acceleValue, mageticValue);
             manager.getOrientation(R, result);
         }
-        Log.e("OriWrapper result:" , Arrays.toString(result));
         isCal = true;
     }
 

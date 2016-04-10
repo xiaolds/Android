@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Environment;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 
 import com.datasure.orientation.DistanceFresher;
 import com.datasure.orientation.OrientationWrapper;
+import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
 
 import org.w3c.dom.Text;
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //get Distance & change state of Button
                 changeBtnState();
+
 //                camera.takePicture(null, null, mPicture);     //capture
             }
         });
@@ -106,13 +109,21 @@ public class MainActivity extends AppCompatActivity {
         fresher = new DistanceFresher(distanceText, ori);
         //start listen and fresh the textView
         fresher.startListen();
+        //init config text
+        initConfig();
     }
 
     /**
-     * Change the data of configration
+     * init config
+     *
      */
-    private void refreshConfigData(){
-
+    private void initConfig(){
+        double H = Config.H;
+        double h = Config.h;
+        String str = "h:" + h +
+                        "\nH:" + H +
+                        "\nH+h:" + (H + h);
+        config.setText(str);
     }
 
     /**
@@ -124,10 +135,14 @@ public class MainActivity extends AppCompatActivity {
         if(isGetDistance){
             capture.setBackgroundResource(R.mipmap.ic_action_reload);
             state.setText(R.string.capture_clicked);
+            state.setTextColor(Color.RED);
+            fresher.stopListen();
         }
         else {
             capture.setBackgroundResource(R.mipmap.ic_action_camera_green);
             state.setText(R.string.capture_unclicked);
+            state.setTextColor(Color.BLUE);
+            fresher.startListen();
         }
 
     }
@@ -138,7 +153,9 @@ public class MainActivity extends AppCompatActivity {
         ori.destory();
         if(fresher.isListen()){
             fresher.stopListen();
+            fresher.destory();
         }
+
     }
 
     private MathUtil util = MathUtil.getInstance();

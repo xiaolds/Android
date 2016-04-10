@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:MyView="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <com.datasure.cameraruler.RulerView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        MyView:height="400px"
+        MyView:width="400px"
+        android:id="@+id/ruler" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="data"
+        android:textSize="30dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/data"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/data_but"
+        android:text="BUTTON"
+        android:layout_below="@id/data"
+        android:layout_centerHorizontal="true"/>
+</RelativeLayout>

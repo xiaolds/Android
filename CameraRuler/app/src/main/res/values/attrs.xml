@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--name是自定义属性名，一般采用驼峰命名法 -->
+    <attr name="width" format="dimension"></attr>
+    <attr name="height" format="dimension"></attr>
+
+    <!--name 是自定义控件类名 -->
+    <declare-styleable name="RulerView">
+        <attr name="width"></attr>
+        <attr name="height"></attr>
+    </declare-styleable>
+</resources>

@@ -85,5 +85,11 @@
         android:text="0.0"
         android:visibility="invisible"
         android:textAlignment="center"/>
+    <Button
+        android:layout_width="300px"
+        android:layout_height="100px"
+        android:layout_centerInParent="true"
+
+        />
 
 </RelativeLayout>

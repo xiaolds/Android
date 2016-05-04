@@ -182,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
         distanceFresher.stopListen();
         heightFresher.stopListen();
         txHeightTip.setVisibility(View.INVISIBLE);
+        //TODO
+        Config.setDistance(distanceFresher.getData());
     }
 
     private void changeToStartCal() {
@@ -202,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
         distanceFresher.stopListen();
         heightFresher.stopListen();
         txHeightTip.setVisibility(View.VISIBLE);
+        //TODO
+        Config.setTotalH(heightFresher.getData());
     }
 
     private void changeToInit() {
@@ -212,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
         distanceFresher.startListen();
         heightFresher.stopListen();
         txHeightTip.setVisibility(View.INVISIBLE);
+        //TODO 暂时在这里进行设置Distance
+        Config.setDistance(-1);
+        Config.setTotalH(-1);
     }
 
 

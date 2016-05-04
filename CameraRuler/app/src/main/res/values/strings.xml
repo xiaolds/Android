@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Camera_Ruler</string>
+    <string name="app_name">Ruler</string>
     <string name="title_activity_ruler">RulerActivity</string>
 
-    <string name="capture_unclicked">点击获取距离</string>
-    <string name="capture_clicked">点击重新获取</string>
+    <string name="capture_unclicked">Get distance</string>
+    <string name="capture_clicked">Retry</string>
 
-    <string name="init_distance">0.0</string>
+    <string name="init_distance">0.00</string>
     <string name="init_config">h:\nH:\nH+h:</string>
 </resources>

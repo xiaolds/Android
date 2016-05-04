@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         //change the state first
         isGetDistance = !isGetDistance;
         if(isGetDistance){
-            capture.setBackgroundResource(R.mipmap.ic_action_reload);
+            capture.setBackgroundResource(R.mipmap.measure_shutter0);
             state.setText(R.string.capture_clicked);
             state.setTextColor(Color.RED);
             distanceFresher.stopListen();
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
             heightText.setVisibility(View.VISIBLE);
         }
         else {
-            capture.setBackgroundResource(R.mipmap.ic_action_camera_green);
+            capture.setBackgroundResource(R.mipmap.measure_shutter1);
             state.setText(R.string.capture_unclicked);
             state.setTextColor(Color.BLUE);
             distanceFresher.startListen();

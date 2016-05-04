@@ -2,9 +2,16 @@
     <string name="app_name">Ruler</string>
     <string name="title_activity_ruler">RulerActivity</string>
 
-    <string name="capture_unclicked">Get distance</string>
-    <string name="capture_clicked">Retry</string>
+    <!-- 拍摄按钮下的state TextView的状态文字-->
+    <string name="tx_dis_init">Get Distance</string>
+    <string name="tx_dis_gotD">Retry</string>
+    <string name="tx_dis_start_calH">Get Height</string>
+    <string name="tx_dis_gotH">Restart</string>
+
+    <string name="tx_distance">Distance(m)</string>
+    <string name="tx_height">Height(m)</string>
 
     <string name="init_distance">0.00</string>
+    <string name="init_height">0.00</string>
     <string name="init_config">h:\nH:\nH+h:</string>
 </resources>

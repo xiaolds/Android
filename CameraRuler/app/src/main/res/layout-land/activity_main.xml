@@ -25,20 +25,20 @@
         android:layout_centerInParent="true" />
 
     <TextView
+        android:id="@+id/id_tx_capture_state"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:textStyle="bold"
         android:textColor="#303F9F"
-        android:id="@+id/id_tx_capture_state"
         android:textAlignment="center"
         android:text="@string/tx_dis_init"
-        android:layout_alignEnd="@+id/button_capture"
-        android:layout_alignStart="@+id/button_capture" />
+        android:layout_alignEnd="@+id/id_btn_capture"
+        android:layout_alignStart="@+id/id_btn_capture" />
 
     <ImageButton
-        android:id="@+id/button_capture"
+        android:id="@+id/id_btn_capture"
         android:background="@mipmap/measure_shutter1"
         android:layout_width="120dp"
         android:layout_height="90dp"
@@ -52,21 +52,23 @@
         />
 
     <TextView
+        android:id="@+id/id_tx_distance"
         android:layout_width="wrap_content"
         android:layout_height="55dp"
-        android:id="@+id/id_distance"
         android:text="@string/init_distance"
         android:textSize="50dp"
         android:textStyle="bold"
-        android:layout_above="@id/button_capture"
+        android:layout_above="@id/id_btn_capture"
         android:textAlignment="center"
         android:paddingLeft="0dp"
         android:textColor="#0cc"
         android:layout_marginRight="30dp"
         android:padding="0dp"
         android:paddingTop="0dp"
-        android:layout_alignEnd="@+id/textView" />
+        android:layout_alignEnd="@+id/id_tx_distance_tip" />
+
     <TextView
+        android:id="@+id/id_tx_distance_tip"
         android:layout_width="wrap_content"
         android:layout_height="44dp"
         android:text="@string/tx_distance"
@@ -74,15 +76,14 @@
         android:textSize="30dp"
         android:textStyle="bold"
         android:layout_alignParentRight="true"
-        android:layout_above="@id/id_distance"
-        android:layout_marginRight="20dp"
-        android:id="@+id/textView" />
+        android:layout_above="@id/id_tx_distance"
+        android:layout_marginRight="20dp" />
 
 
     <TextView
+        android:id="@+id/id_tx_config"
         android:layout_width="120dp"
         android:layout_height="100dp"
-        android:id="@+id/id_tx_config"
         android:text="@string/init_config"
         android:textStyle="bold"
         android:textSize="25dp"
@@ -101,11 +102,11 @@
         />
 
     <TextView
+        android:id="@+id/id_txt_height"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_above="@id/id_tx_config"
-        android:id="@+id/id_txt_height"
         android:textColor="#0cc"
         android:textSize="30dp"
         android:text="@string/init_distance"
@@ -115,6 +116,7 @@
         />
 
     <TextView
+        android:id="@+id/id_tx_height_tip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/id_txt_height"

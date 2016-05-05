@@ -51,6 +51,7 @@ public class HeightFresher extends Fresher {
         @Override
         public void run() {
             try{
+
                 if(!isStart) return;
                 data = util.calTotalH(ori.getResult()[2]);
                 if(Math.abs(lastData - data) > Fresher.ACCURACY){
@@ -59,6 +60,7 @@ public class HeightFresher extends Fresher {
                     handler.sendMessage(message);
                     lastData = data;
                 }
+
             }
             catch (Exception e){
                 return;
@@ -75,7 +77,7 @@ public class HeightFresher extends Fresher {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x2:   //fresh
-                    String string = String.format("%.1f",data);
+                    String string = String.format("%.2f",data);
                     Log.e("FormatString:", string);
                     disText.setText(string);
                     break;

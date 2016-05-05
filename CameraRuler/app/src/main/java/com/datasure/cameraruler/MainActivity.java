@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -30,23 +28,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
-
+    //相机相关
     private Camera camera;
     private CameraPreView preView;
+
+    //控件
     private ImageButton capture;
-    private TextView state;
-    private TextView config;
-    private TextView distanceText;
+    private TextView txState;
+    private TextView txConfig;
+    private TextView txDistance;
     private DistanceFresher distanceFresher;
     private HeightFresher heightFresher;
-    private ImageButton btnTotalH;
-    private TextView heightText;
+    private ImageButton btnShowH;
+    private TextView txHeight;
+    private TextView txHeightTip;
 
-    //use the Orientation Sensor
+    //Orientation Sensor
     private OrientationWrapper ori;
-//    private float[] result; //store the result of Orientation sensor
-    private boolean isGetDistance = false;
-    private boolean isGetHeight = false;
+
+    //State
+    private static State state = State.INITIAL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +61,14 @@ public class MainActivity extends AppCompatActivity {
 
         //get the instance of Orientation sensor
         ori = new OrientationWrapper(this);
-        capture = (ImageButton) findViewById(R.id.button_capture);
-        state = (TextView) findViewById(R.id.id_btn_state);
-        config = (TextView) findViewById(R.id.id_config_data);
-        distanceText = (TextView) findViewById(R.id.id_distance);
-        btnTotalH = (ImageButton) findViewById(R.id.id_btn_totalH);
-        heightText = (TextView) findViewById(R.id.id_txt_totalH);
+        capture = (ImageButton) findViewById(R.id.id_btn_capture);              //拍摄按钮
+        txState = (TextView) findViewById(R.id.id_tx_capture_state);            //拍摄按钮底下的提示按钮
+        txConfig = (TextView) findViewById(R.id.id_tx_config);                  //左侧显示H h的TextView
+        txHeight = (TextView) findViewById(R.id.id_txt_height);                 //显示高度的TextView
+        txDistance = (TextView) findViewById(R.id.id_tx_distance);              //显示距离
+        btnShowH = (ImageButton) findViewById(R.id.id_btn_totalH);              //点击显示高度的按钮
+        txHeightTip = (TextView) findViewById(R.id.id_tx_height_tip);           //
+
     }
 
 
@@ -77,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         if(!checkCameraHardware(this)){
             return;
         }
+
+
         //get the camera
         camera = getCameraInstance();
         //get SurfaceView
@@ -89,28 +94,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //get Distance & change state of Button
-                changeBtnState();
-//                camera.takePicture(null, null, mPicture);     //capture
+                changeState(v);
+//                camera.takePicture(null, null, mPicture);     //capture TODO
             }
         });
 
-        btnTotalH.setOnClickListener(new View.OnClickListener() {
+        btnShowH.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeHbtnState();
+                changeState(v);
             }
         });
 
         //init sensor
         ori.init();
         //when ori has initialed,start calculate the distance
-        distanceFresher = new DistanceFresher(distanceText, ori);
+        distanceFresher = new DistanceFresher(txDistance, ori);
         //start listen and fresh the textView
         distanceFresher.initial();
-        distanceFresher.startListen();
+//        distanceFresher.startListen();
 
-        heightFresher = new HeightFresher(heightText, ori);
+        heightFresher = new HeightFresher(txHeight, ori);
         heightFresher.initial();
+
+        changeToInit();
         //init config text
         initConfig();
     }
@@ -125,53 +132,95 @@ public class MainActivity extends AppCompatActivity {
         String str = "h:" + h +
                         "\nH:" + H +
                         "\nH+h:" + (H + h);
-        config.setText(str);
+        txConfig.setText(str);
     }
 
     /**
      * change the Button capture's state
      */
-    private void changeBtnState(){
-        //change the state first
-        isGetDistance = !isGetDistance;
-        if(isGetDistance){
-            capture.setBackgroundResource(R.mipmap.ic_action_reload);
-            state.setText(R.string.capture_clicked);
-            state.setTextColor(Color.RED);
-            distanceFresher.stopListen();
-            Config.setDistance(distanceFresher.getData());
-            heightFresher.startListen();
-            //display the Button
-            btnTotalH.setVisibility(View.VISIBLE);
-            heightText.setVisibility(View.VISIBLE);
-        }
-        else {
-            capture.setBackgroundResource(R.mipmap.ic_action_camera_green);
-            state.setText(R.string.capture_unclicked);
-            state.setTextColor(Color.BLUE);
-            distanceFresher.startListen();
-            heightFresher.stopListen();
-            btnTotalH.setVisibility(View.INVISIBLE);
-            heightText.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    /**
-     * change the state of Button which can get Height
-     */
-    public void changeHbtnState(){
-        isGetHeight = !isGetHeight;
-        if(isGetHeight){
-            heightFresher.stopListen();
-            Config.setTotalH(heightFresher.getData());
-            Log.e("HeightFresher","stop");
-        }
-        else {
-            heightFresher.startListen();
-            Log.e("HeightFresher","start");
+    private void changeState(final View view){
+        ImageButton btn = (ImageButton) view;
+        switch (state){
+            case INITIAL:
+                if (btn.equals(capture)){
+                    state = State.GOT_DIS;
+                    changeToGotDis();
+                }
+                break;
+            case GOT_DIS:
+                if(btn.equals(capture)){
+                    state = State.INITIAL;
+                    changeToInit();
+                }
+                else if(btn.equals(btnShowH)){
+                    state = State.START_CAL_H;
+                    changeToStartCal();
+                }
+                break;
+            case START_CAL_H:
+                if(btn.equals(capture)) {
+                    state = State.GOT_HEI;
+                    changeToGotHei();
+                }
+                break;
+            case GOT_HEI:
+                if(btn.equals(capture)){
+                    state = State.INITIAL;
+                    changeToInit();
+                }
+                break;
+            default: break;
         }
 
     }
+
+    private void changeToGotDis(){
+        capture.setBackgroundResource(R.mipmap.measure_shutter0);
+        txState.setText(R.string.tx_dis_gotD);
+        txHeight.setVisibility(View.INVISIBLE);
+        btnShowH.setVisibility(View.VISIBLE);
+        distanceFresher.stopListen();
+        heightFresher.stopListen();
+        txHeightTip.setVisibility(View.INVISIBLE);
+        //TODO
+        Config.setDistance(distanceFresher.getData());
+    }
+
+    private void changeToStartCal() {
+        capture.setBackgroundResource(R.mipmap.measure_shutter1);
+        txState.setText(R.string.tx_dis_start_calH);
+        txHeight.setVisibility(View.VISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.stopListen();
+        heightFresher.startListen();
+        txHeightTip.setVisibility(View.VISIBLE);
+    }
+
+    private void changeToGotHei() {
+        capture.setBackgroundResource(R.mipmap.measure_shutter0);
+        txState.setText(R.string.tx_dis_gotH);
+        txHeight.setVisibility(View.VISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.stopListen();
+        heightFresher.stopListen();
+        txHeightTip.setVisibility(View.VISIBLE);
+        //TODO
+        Config.setTotalH(heightFresher.getData());
+    }
+
+    private void changeToInit() {
+        capture.setBackgroundResource(R.mipmap.measure_shutter1);
+        txState.setText(R.string.tx_dis_init);
+        txHeight.setVisibility(View.INVISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.startListen();
+        heightFresher.stopListen();
+        txHeightTip.setVisibility(View.INVISIBLE);
+        //TODO 暂时在这里进行设置Distance
+        Config.setDistance(-1);
+        Config.setTotalH(-1);
+    }
+
 
     @Override
     protected void onStop() {

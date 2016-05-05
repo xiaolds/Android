@@ -16,11 +16,16 @@ public class MathUtilTest extends InstrumentationTestCase{
         util = MathUtil.getInstance();
     }
 
-    public void test() throws Exception {
 
-//        assertEquals(1.5, util.calDistance(Math.PI/4));
+    public void testGetFormatString(){
+
+        String str = null;
+        str = util.getFormatString(0.01);
+        assertEquals("%.2f", str);
+
 
     }
+
 
     @Override
     public void tearDown() throws Exception{

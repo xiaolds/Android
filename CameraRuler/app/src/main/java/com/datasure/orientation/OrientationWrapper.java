@@ -149,9 +149,9 @@ public class OrientationWrapper {
     }
 
     private void printLog(float[] result){
-        Log.e("The result of sensor X:", " " + result[0]);
-        Log.e("The result of sensor Y:", " " + result[1]);
-        Log.e("The result of sensor Z:", " " + result[2]);
+        Log.e("The result of sensor Z:", " " + result[0]);
+        Log.e("The result of sensor X:", " " + result[1]);
+        Log.e("The result of sensor Y:", " " + result[2]);
     }
 
 }

@@ -5,6 +5,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
 
 import java.util.Timer;
@@ -77,7 +78,7 @@ public class HeightFresher extends Fresher {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x2:   //fresh
-                    String string = String.format("%.2f",data);
+                    String string = String.format(util.getFormatString(Config.getACCURACY()),data);
                     Log.e("FormatString:", string);
                     disText.setText(string);
                     break;

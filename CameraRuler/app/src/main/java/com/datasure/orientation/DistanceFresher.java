@@ -28,7 +28,6 @@ public class DistanceFresher extends Fresher{
 
     private Handler handler;
     private static final int REFRESH_TIME = 100;    //100ms
-    private static final double ACCURACY = 0.01;
 
 
     public DistanceFresher(TextView disText, OrientationWrapper ori) {
@@ -83,8 +82,7 @@ public class DistanceFresher extends Fresher{
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x1:   //fresh
-                    //TODO 这里需要一个根据ACCURACY来判断舍入位数的函数
-                    String string = String.format("%.2f",data);
+                    String string = String.format(util.getFormatString(Config.getACCURACY()),data);
                     Log.e("FormatString:", string);
                     disText.setText(string);
                     break;

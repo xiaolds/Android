@@ -83,8 +83,7 @@ public class DistanceFresher extends Fresher{
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x1:   //fresh
-                    //TODO 这里需要一个根据ACCURACY来判断舍入位数的函数
-                    String string = String.format("%.2f",data);
+                    String string = String.format(util.getFormatStringFormAccuracy(Config.getACCURACY()),data);
                     Log.e("FormatString:", string);
                     disText.setText(string);
                     break;

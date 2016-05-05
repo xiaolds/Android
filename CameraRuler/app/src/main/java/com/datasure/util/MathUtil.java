@@ -56,4 +56,12 @@ public class MathUtil {
     }
 
 
+    public String getFormatStringFormAccuracy(final double acc){
+
+        String string = String.valueOf(acc);
+        int bit = string.length() - 2;
+
+        return "%." + bit + "f";
+    }
+
 }

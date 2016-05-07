@@ -1,6 +1,7 @@
 package com.datasure.cameraruler;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
+        //强制横屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
 
         //get the instance of Orientation sensor
@@ -89,6 +92,12 @@ public class MainActivity extends AppCompatActivity {
         //get Layout
         FrameLayout layout = (FrameLayout) findViewById(R.id.camera_preview);
         layout.addView(preView);
+
+//        TODO 添加Ball
+        BallView ballView = new BallView(this, ori);
+        FrameLayout layout1 = (FrameLayout) findViewById(R.id.ball);
+        layout1.addView(ballView);
+
         //get the Button and set ClickListener
         capture.setOnClickListener(new View.OnClickListener() {
             @Override

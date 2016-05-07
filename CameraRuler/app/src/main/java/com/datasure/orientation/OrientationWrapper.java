@@ -7,6 +7,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
+import com.datasure.cameraruler.MainActivity;
+
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -41,6 +43,7 @@ public class OrientationWrapper {
 
     private Sensor accelerometer;   //accelerometer sensor，加速度传感器
     private Sensor magnetic;        //magnetic sensor,地磁传感器
+    private static OrientationWrapper wrapper = null;
 
 
     /**
@@ -109,7 +112,7 @@ public class OrientationWrapper {
             manager.getRotationMatrix(R, null, acceleValue, mageticValue);
             manager.getOrientation(R, result);
             if(((currentTime = System.currentTimeMillis()) - oldTime) > 1000){
-                printLog(result);
+//                printLog(result);
                 oldTime = currentTime;
             }
 

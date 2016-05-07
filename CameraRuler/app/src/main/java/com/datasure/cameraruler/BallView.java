@@ -1,0 +1,153 @@
+package com.datasure.cameraruler;
+
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+import com.datasure.orientation.OrientationWrapper;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+/**
+ * Created by xiaolds on 2016/5/6.
+ */
+public class BallView extends SurfaceView implements SurfaceHolder.Callback {
+
+    private Timer timer;
+    private SurfaceHolder mHolder;
+    private OrientationWrapper wrapper;
+
+    public BallView(Context context, OrientationWrapper wrapper){
+        super(context);
+        this.setZOrderOnTop(true);
+
+        mHolder = this.getHolder();
+        mHolder.addCallback(this);
+        //设置为透明,这里很重要，否则会直接变成黑框
+        mHolder.setFormat(PixelFormat.TRANSPARENT);
+
+        this.wrapper = wrapper;
+    }
+
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        //开启绘制线程
+        timer = new Timer();
+        timer.schedule(new BallDrawerTask(holder),0,100);
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        //销毁绘制线程
+        timer.cancel();
+    }
+
+    /**
+     * 使用单独的线程刷新小球界面
+     */
+
+    class BallDrawerTask extends TimerTask {
+
+        //holder
+        private SurfaceHolder mHolder;
+
+        public BallDrawerTask(SurfaceHolder holder){
+            this.mHolder = holder;
+        }
+
+        @Override
+        public void run() {
+            //绘制图形
+//            drawOutter(mHolder);
+            float data = wrapper.getResult()[1];
+
+            if(checkData(data)){
+                //clear screen
+//                clearScreen(mHolder);
+                drawOutter(mHolder);
+                //get Data
+                PointF p = getFormatPointF(data);
+                //print log
+                Log.e("BallView Point", p.toString());
+                //draw ball
+                Canvas canvas = mHolder.lockCanvas();
+                Paint paint = new Paint();
+                paint.setColor(Color.GREEN);
+                paint.setStyle(Paint.Style.FILL);
+                canvas.drawCircle(p.x,p.y,32,paint);
+                //commit
+                mHolder.unlockCanvasAndPost(canvas);
+            }
+
+        }
+    }
+
+    private void clearScreen(SurfaceHolder holder) {
+
+        //获取画板
+        Canvas canvas = holder.lockCanvas();
+        //获取橡皮擦
+        Paint clearPaint = new Paint();
+        clearPaint.setAntiAlias(true);
+        clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        //执行清屏
+        Rect rect = new Rect(0,0, 96*3, 32*3);
+        canvas.drawRect(rect,clearPaint);
+        holder.unlockCanvasAndPost(canvas);
+    }
+
+
+    private void drawOutter(SurfaceHolder holder) {
+        //尝试绘制
+        Canvas canvas = holder.lockCanvas();
+
+        //设置画笔
+        Paint paint = new Paint();
+        paint.setColor(Color.GREEN);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(10.0f);
+        //画方框,96*32
+//        Rect rect = new Rect(48,48,16,16);
+        Rect rect = new Rect(0,0,96 * 3,32 * 3);
+        canvas.drawRect(rect, paint);
+        //画三等分线
+        canvas.drawLine(32 * 3, 0, 32 *3, 32 *3,paint);
+        canvas.drawLine(32 * 6, 0, 32 *3 * 2, 32 *3,paint);
+        //刷新提交
+        holder.unlockCanvasAndPost(canvas);
+    }
+
+    //判断数据的有效性，并根据精确度分析是否该刷新小球的位置
+    private boolean checkData(float data) {
+        //TODO
+        return true;
+    }
+
+    private PointF getFormatPointF(float data) {
+        Log.e("BallView Data", "" + data);
+        PointF p = new PointF();
+        p.y = 48;
+        p.x = 96 * data + 144;
+        return p;
+    }
+
+}

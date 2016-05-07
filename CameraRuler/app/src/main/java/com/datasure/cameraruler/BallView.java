@@ -12,6 +12,7 @@ import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -30,6 +31,8 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
     private OrientationWrapper wrapper;
 
+    public static final float Radius = 32f;
+
     public BallView(Context context, OrientationWrapper wrapper){
         super(context);
         this.setZOrderOnTop(true);
@@ -47,7 +50,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         //开启绘制线程
         timer = new Timer();
-        timer.schedule(new BallDrawerTask(holder),0,100);
+        timer.schedule(new BallDrawerTask(holder),0,30);
     }
 
     @Override
@@ -69,6 +72,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
 
         //holder
         private SurfaceHolder mHolder;
+        private PointF oldPoint;
 
         public BallDrawerTask(SurfaceHolder holder){
             this.mHolder = holder;
@@ -81,37 +85,39 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
             float data = wrapper.getResult()[1];
 
             if(checkData(data)){
-                //clear screen
-//                clearScreen(mHolder);
-                drawOutter(mHolder);
+
                 //get Data
                 PointF p = getFormatPointF(data);
-                //print log
-                Log.e("BallView Point", p.toString());
-                //draw ball
-                Canvas canvas = mHolder.lockCanvas();
-                Paint paint = new Paint();
-                paint.setColor(Color.GREEN);
-                paint.setStyle(Paint.Style.FILL);
-                canvas.drawCircle(p.x,p.y,32,paint);
-                //commit
-                mHolder.unlockCanvasAndPost(canvas);
+
+                drawBall(mHolder,oldPoint,p);
+                drawOutter(mHolder);
+                oldPoint = p;
             }
 
         }
     }
 
-    private void clearScreen(SurfaceHolder holder) {
+    //绘制小球
+    private void drawBall(SurfaceHolder holder,final PointF old, final PointF fresh) {
+
+        if(old == null || fresh == null) return;
+        //先清除旧小球
 
         //获取画板
-        Canvas canvas = holder.lockCanvas();
+        Rect clearRec = new Rect((int)(old.x-Radius),(int)(old.y-Radius),(int)(old.x+Radius),(int)(old.y+Radius));
+        Canvas canvas = holder.lockCanvas(clearRec);
         //获取橡皮擦
         Paint clearPaint = new Paint();
         clearPaint.setAntiAlias(true);
         clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         //执行清屏
-        Rect rect = new Rect(0,0, 96*3, 32*3);
-        canvas.drawRect(rect,clearPaint);
+        canvas.drawRect(clearRec, clearPaint);
+
+        //绘制新小球
+        Paint paint = new Paint();
+        paint.setColor(Color.BLUE);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        canvas.drawCircle(fresh.x, fresh.y, Radius, paint);
         holder.unlockCanvasAndPost(canvas);
     }
 

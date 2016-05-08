@@ -2,8 +2,6 @@ package com.datasure.cameraruler;
 
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,7 +10,6 @@ import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -100,7 +97,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
     //绘制小球
     private void drawBall(SurfaceHolder holder,final PointF old, final PointF fresh) {
 
-        if(old == null || fresh == null) return;
+        if(old == null || fresh == null || holder==null) return;
         //先清除旧小球
 
         //获取画板

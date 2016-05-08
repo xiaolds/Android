@@ -1,14 +1,19 @@
 package com.datasure.cameraruler;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -55,9 +60,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //设置全屏，隐藏ActionBar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+//        getSupportActionBar().hide();
+//        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0f0000ff")));
         //强制横屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
@@ -74,6 +80,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //创建菜单
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //添加菜单项
+        MenuItem add=menu.add(0,0,0,"add");
+        MenuItem del=menu.add(0,0,0,"del");
+        MenuItem save=menu.add(0,0,0,"save");
+        //绑定到ActionBar
+        add.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        del.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        save.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     protected void onResume() {
@@ -93,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout layout = (FrameLayout) findViewById(R.id.camera_preview);
         layout.addView(preView);
 
-//        TODO 添加Ball
+        //添加小球
         BallView ballView = new BallView(this, ori);
         FrameLayout layout1 = (FrameLayout) findViewById(R.id.ball);
         layout1.addView(ballView);
@@ -239,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         distanceFresher.destroy();
         heightFresher.stopListen();
         heightFresher.destroy();
+        camera.release();
     }
 
     private MathUtil util = MathUtil.getInstance();

@@ -2,6 +2,7 @@ package com.datasure.cameraruler;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 import com.datasure.orientation.DistanceFresher;
 import com.datasure.orientation.HeightFresher;
 import com.datasure.orientation.OrientationWrapper;
+import com.datasure.setting.SettingsActivity;
 import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
 
@@ -83,15 +86,31 @@ public class MainActivity extends AppCompatActivity {
     //创建菜单
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //添加菜单项
-        MenuItem add=menu.add(0,0,0,"add");
-        MenuItem del=menu.add(0,0,0,"del");
-        MenuItem save=menu.add(0,0,0,"save");
-        //绑定到ActionBar
-        add.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        del.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        save.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_actions,menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    //菜单点击
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        //处理
+        switch (item.getItemId()) {
+            //处理拍摄按钮
+            case R.id.id_menu_capture:
+                //TODO
+                return true;
+            //处理设置基线按钮
+            case R.id.id_menu_setting:
+                Intent intent = new Intent(SettingsActivity.ACTION_SETTING);
+//                intent.setAction(SettingsActivity.SETTING);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

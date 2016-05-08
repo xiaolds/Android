@@ -1,19 +1,16 @@
 package com.datasure.cameraruler;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Rect;
+
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+
 
 /**
  * Created by xiaolds on 2016/3/15.
@@ -45,6 +42,7 @@ public class CameraPreView extends SurfaceView implements SurfaceHolder.Callback
         try{
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
+            Log.e("CameraView","camera created!");
         }
         catch (IOException e){
             Log.d("surfaceCreated", "Error Settion camera preview: " + e.getMessage());
@@ -80,6 +78,7 @@ public class CameraPreView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         if(mCamera != null){
+            Log.e("CameraView","it release the camera!");
             mCamera.release();
             mCamera = null;
         }

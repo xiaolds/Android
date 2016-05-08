@@ -13,6 +13,7 @@ import android.hardware.Camera;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -270,14 +271,27 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if(camera != null){
+            Log.e("MainActivity","it release the camera!");
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }
+
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
-        ori.destory();
+
         distanceFresher.stopListen();
         distanceFresher.destroy();
         heightFresher.stopListen();
         heightFresher.destroy();
-        camera.release();
+        ori.destory();
+        Log.e("MainActivity","onStop runned");
     }
 
     private MathUtil util = MathUtil.getInstance();
@@ -287,13 +301,14 @@ public class MainActivity extends AppCompatActivity {
      * get the instance of camera
      * @return the instance of camera
      */
-    public static Camera getCameraInstance(){
-        Camera camera = null;
+    private Camera getCameraInstance(){
+        if (camera != null) return camera;
         try{
             camera = Camera.open();
+            Log.e("MainActivity","Try to get the camera instance");
         }
         catch (Exception e){
-
+            Log.e("MainActivity","Get Camera failed!");
         }
         return camera;
     }

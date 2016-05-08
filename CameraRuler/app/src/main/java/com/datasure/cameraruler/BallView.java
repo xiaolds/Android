@@ -146,7 +146,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private PointF getFormatPointF(float data) {
-        Log.e("BallView Data", "" + data);
+//        Log.e("BallView Data", "" + data);
         PointF p = new PointF();
         p.y = 48;
         p.x = 96 * data + 144;

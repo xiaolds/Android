@@ -84,7 +84,7 @@ public class DistanceFresher extends Fresher{
             switch (msg.what){
                 case 0x1:   //fresh
                     String string = String.format(util.getFormatStringFormAccuracy(Config.getACCURACY()),data);
-                    Log.e("FormatString:", string);
+//                    Log.e("FormatString:", string);
                     disText.setText(string);
                     break;
                 default:

@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.datasure.setting.HeightFragment"
+    android:id="@+id/id_layout_all">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/id_height_input_box">
+
+        <TextView
+            android:id="@+id/id_txt_height_quiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="输入人的高度："
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            />
+        <EditText
+            android:id="@+id/id_edit_h"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/id_txt_height_quiz"/>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/id_H_input_box">
+
+        <TextView
+            android:id="@+id/id_txt_H_quiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="输入建筑高度："
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            />
+        <EditText
+            android:id="@+id/id_edit_H"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/id_txt_H_quiz"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -17,8 +17,8 @@
 
     <!--Menu 里的String-->
     <string name="menu_capture">Capture</string>
-    <string name="menu_setting">Setting</string>
-    <string name="menu_modify_h">修改基线</string>
+    <string name="menu_setting">设置高度</string>
+    <string name="menu_modify_mis">修改基线</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -78,5 +78,8 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

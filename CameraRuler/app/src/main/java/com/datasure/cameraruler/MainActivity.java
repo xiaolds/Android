@@ -3,6 +3,7 @@ package com.datasure.cameraruler;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -28,7 +29,8 @@ import android.widget.TextView;
 import com.datasure.orientation.DistanceFresher;
 import com.datasure.orientation.HeightFresher;
 import com.datasure.orientation.OrientationWrapper;
-import com.datasure.setting.SettingsActivity;
+import com.datasure.setting.HeightFragment;
+import com.datasure.setting.MisFragment;
 import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
 
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        isFirstUsing();
 
         //设置全屏，隐藏ActionBar
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -103,11 +107,17 @@ public class MainActivity extends AppCompatActivity {
             case R.id.id_menu_capture:
                 //TODO
                 return true;
+            case R.id.id_menu_mis:
+                MisFragment mis = new MisFragment();
+                mis.show(getSupportFragmentManager(), "MisFragment");
+                return true;
             //处理设置基线按钮
             case R.id.id_menu_setting:
-                Intent intent = new Intent(SettingsActivity.ACTION_SETTING);
-//                intent.setAction(SettingsActivity.SETTING);
+                /*Intent intent = new Intent(SettingsActivity.ACTION_SETTING);
                 startActivity(intent);
+                */
+                HeightFragment fragment1 = new HeightFragment();
+                fragment1.show(getSupportFragmentManager(),"HeightFragment");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -371,6 +381,29 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+    /**
+     * 判断是否是第一次使用软件，是的话初始化几个值
+     * @return
+     */
+    private boolean isFirstUsing() {
+
+        boolean isFirstUsing;
+        SharedPreferences setting = this.getSharedPreferences("setting", 0);
+        SharedPreferences.Editor editor = setting.edit();
+        //try to get the isFirstUsing
+        isFirstUsing = setting.getBoolean("isFirstUsing",true);
+
+        if(isFirstUsing) {
+            editor.putBoolean("isFirstUsing", false);
+            editor.putFloat("h",1.7f);
+            editor.putFloat("H",0f);
+            editor.putInt("mis",100);
+            editor.commit();
+        }
+
+        return isFirstUsing;
+    }
 }
 
 

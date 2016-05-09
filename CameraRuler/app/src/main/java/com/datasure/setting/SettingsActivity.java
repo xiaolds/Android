@@ -126,8 +126,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //TODO
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_BEHIND);
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_BEHIND);
         setupActionBar();
     }
 

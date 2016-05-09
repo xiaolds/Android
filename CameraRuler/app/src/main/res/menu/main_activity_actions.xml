@@ -8,4 +8,6 @@
         />
     <item android:id="@+id/id_menu_setting"
         android:title="@string/menu_setting"/>
+    <item android:id="@+id/id_menu_mis"
+        android:title="@string/menu_modify_mis"/>
 </menu>

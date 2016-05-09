@@ -28,6 +28,7 @@ public class DistanceFresher extends Fresher{
 
     private Handler handler;
     private static final int REFRESH_TIME = 100;    //100ms
+    private static final double ACCURACY = 0.01;
 
 
     public DistanceFresher(TextView disText, OrientationWrapper ori) {
@@ -82,8 +83,8 @@ public class DistanceFresher extends Fresher{
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x1:   //fresh
-                    String string = String.format(util.getFormatString(Config.getACCURACY()),data);
-                    Log.e("FormatString:", string);
+                    String string = String.format(util.getFormatStringFormAccuracy(Config.getACCURACY()),data);
+//                    Log.e("FormatString:", string);
                     disText.setText(string);
                     break;
                 default:

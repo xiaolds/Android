@@ -11,8 +11,8 @@ public class Config {
 
     private static double distance = -1;                //the distance from person to object
     private static double totalH = -1;              //the Height of building
-
-    private static double ACCURACY = 0.01;
+    private static double ACCURACY = 0.01;          //高度跟距离的精确度
+    private static double frequencyOfBallFresh = 10;    //每秒10次,小球刷新频率
 
     public static synchronized void setDistance(double distance) {
         Config.distance = distance;
@@ -34,7 +34,7 @@ public class Config {
         return ACCURACY;
     }
 
-    public static synchronized void setACCURACY(double ACCURACY) {
-        Config.ACCURACY = ACCURACY;
+    public static synchronized void setACCURACY(double accuracy) {
+        Config.ACCURACY = accuracy;
     }
 }

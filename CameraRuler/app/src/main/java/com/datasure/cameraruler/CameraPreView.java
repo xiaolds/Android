@@ -1,18 +1,16 @@
 package com.datasure.cameraruler;
 
 import android.content.Context;
-import android.graphics.Rect;
+
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+
 
 /**
  * Created by xiaolds on 2016/3/15.
@@ -31,8 +29,6 @@ public class CameraPreView extends SurfaceView implements SurfaceHolder.Callback
         // underlying surface is created and destroyed.
         mHolder = getHolder();
         mHolder.addCallback(this);
-        // deprecated setting, but required on Android versions prior to 3.0
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         //实例化GestureDetector
         gesture = new GestureDetector(context,this);
@@ -41,9 +37,12 @@ public class CameraPreView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+
+        //打开相机预览界面
         try{
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
+            Log.e("CameraView","camera created!");
         }
         catch (IOException e){
             Log.d("surfaceCreated", "Error Settion camera preview: " + e.getMessage());
@@ -79,6 +78,7 @@ public class CameraPreView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         if(mCamera != null){
+            Log.e("CameraView","it release the camera!");
             mCamera.release();
             mCamera = null;
         }

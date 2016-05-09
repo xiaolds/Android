@@ -1,13 +1,22 @@
 package com.datasure.cameraruler;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -19,6 +28,7 @@ import android.widget.TextView;
 import com.datasure.orientation.DistanceFresher;
 import com.datasure.orientation.HeightFresher;
 import com.datasure.orientation.OrientationWrapper;
+import com.datasure.setting.SettingsActivity;
 import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
 
@@ -54,9 +64,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //设置全屏，隐藏ActionBar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+//        getSupportActionBar().hide();
+//        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0f0000ff")));
+        //强制横屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
 
         //get the instance of Orientation sensor
@@ -71,6 +84,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //创建菜单
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_actions,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    //菜单点击
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        //处理
+        switch (item.getItemId()) {
+            //处理拍摄按钮
+            case R.id.id_menu_capture:
+                //TODO
+                return true;
+            //处理设置基线按钮
+            case R.id.id_menu_setting:
+                Intent intent = new Intent(SettingsActivity.ACTION_SETTING);
+//                intent.setAction(SettingsActivity.SETTING);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -89,6 +131,12 @@ public class MainActivity extends AppCompatActivity {
         //get Layout
         FrameLayout layout = (FrameLayout) findViewById(R.id.camera_preview);
         layout.addView(preView);
+
+        //添加小球
+        BallView ballView = new BallView(this, ori);
+        FrameLayout layout1 = (FrameLayout) findViewById(R.id.ball);
+        layout1.addView(ballView);
+
         //get the Button and set ClickListener
         capture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,13 +271,27 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if(camera != null){
+            Log.e("MainActivity","it release the camera!");
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }
+
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
-        ori.destory();
+
         distanceFresher.stopListen();
         distanceFresher.destroy();
         heightFresher.stopListen();
         heightFresher.destroy();
+        ori.destory();
+        Log.e("MainActivity","onStop runned");
     }
 
     private MathUtil util = MathUtil.getInstance();
@@ -239,13 +301,14 @@ public class MainActivity extends AppCompatActivity {
      * get the instance of camera
      * @return the instance of camera
      */
-    public static Camera getCameraInstance(){
-        Camera camera = null;
+    private Camera getCameraInstance(){
+        if (camera != null) return camera;
         try{
             camera = Camera.open();
+            Log.e("MainActivity","Try to get the camera instance");
         }
         catch (Exception e){
-
+            Log.e("MainActivity","Get Camera failed!");
         }
         return camera;
     }

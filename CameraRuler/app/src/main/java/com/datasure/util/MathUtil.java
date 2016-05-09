@@ -1,9 +1,5 @@
 package com.datasure.util;
 
-import android.util.Log;
-
-import java.util.Arrays;
-
 /**
  * This Class is Created to calculate the height</br>
  * use single instance
@@ -15,15 +11,9 @@ public class MathUtil {
     public static MathUtil util = null;
 
     public static MathUtil getInstance() {
-
         if (util == null) {
-            synchronized (MathUtil.class){
-                if(util == null) {
-                    util = new MathUtil();
-                }
-            }
+            util = new MathUtil();
         }
-
         return util;
     }
 
@@ -66,17 +56,12 @@ public class MathUtil {
     }
 
 
-    /**
-     * 根据精度信息返回Format信息
-     * @param accuracy
-     * @return
-     */
-    public String getFormatString(final double accuracy) {
+    public String getFormatStringFormAccuracy(final double acc){
 
-        //将double转换为String类型，统计小数点后的位数
-        String str = String.valueOf(accuracy);
-        String strs = str.substring(2, str.length());
-        int bit = strs.length();
-        return "%." + bit + "f"; //%.2f
+        String string = String.valueOf(acc);
+        int bit = string.length() - 2;
+
+        return "%." + bit + "f";
     }
+
 }

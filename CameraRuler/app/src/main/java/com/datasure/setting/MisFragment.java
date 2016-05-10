@@ -16,6 +16,7 @@ import android.widget.EditText;
 
 import com.datasure.cameraruler.R;
 
+
 /**
  * A simple {@link Fragment} subclass.
  */

@@ -1,5 +1,9 @@
 package com.datasure.util;
 
+import android.content.SharedPreferences;
+
+import com.datasure.cameraruler.MainActivity;
+
 /**
  * Created by xiaolds on 2016/4/10.
  */
@@ -13,6 +17,7 @@ public class Config {
     private static double totalH = -1;              //the Height of building
     private static double ACCURACY = 0.01;          //高度跟距离的精确度
     private static double frequencyOfBallFresh = 10;    //每秒10次,小球刷新频率
+    private static float mis = 100;
 
     public static synchronized void setDistance(double distance) {
         Config.distance = distance;
@@ -36,5 +41,13 @@ public class Config {
 
     public static synchronized void setACCURACY(double accuracy) {
         Config.ACCURACY = accuracy;
+    }
+
+    public static synchronized void setMis(float mis){
+        Config.mis = mis;
+    }
+
+    public static synchronized float getMis(){
+        return Config.mis;
     }
 }

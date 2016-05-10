@@ -15,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.datasure.cameraruler.MainActivity;
 import com.datasure.cameraruler.R;
+import com.datasure.util.Config;
 
 
 public class HeightFragment extends DialogFragment {
@@ -58,6 +60,10 @@ public class HeightFragment extends DialogFragment {
                         editor.putFloat("H", Float.valueOf(_H.getText().toString()));
                         editor.putFloat("h", Float.valueOf(_h.getText().toString()));
                         editor.commit();
+                        //设置Config数据
+                        Config.H = Double.valueOf(_H.getText().toString());
+                        Config.h = Double.valueOf(_h.getText().toString());
+                        ((MainActivity)getActivity()).initConfig();
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {

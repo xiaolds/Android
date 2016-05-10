@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.datasure.cameraruler.R;
+import com.datasure.util.Config;
 
 
 /**
@@ -55,6 +56,7 @@ public class MisFragment extends DialogFragment {
                         //set mis
                         editor.putFloat("mis", Float.valueOf(mis.getText().toString()));
                         editor.commit();
+                        Config.setMis(Float.valueOf(mis.getText().toString()));
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {

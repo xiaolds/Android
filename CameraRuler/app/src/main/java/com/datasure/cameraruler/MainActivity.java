@@ -34,6 +34,7 @@ import com.datasure.setting.HeightFragment;
 import com.datasure.setting.MisFragment;
 import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
+import com.datasure.view.BallView2;
 
 import org.w3c.dom.Text;
 
@@ -154,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
         BallView ballView = new BallView(this, ori);
         FrameLayout layout1 = (FrameLayout) findViewById(R.id.ball);
         layout1.addView(ballView);
+        /*BallView2 ballView2 = new BallView2(this,ori);
+        FrameLayout layout1 = (FrameLayout) findViewById(R.id.ball);
+        layout1.addView(ballView2);*/
 
         //get the Button and set ClickListener
         capture.setOnClickListener(new View.OnClickListener() {
@@ -192,12 +196,18 @@ public class MainActivity extends AppCompatActivity {
      * init config
      *
      */
-    private void initConfig(){
-        double H = Config.H;
-        double h = Config.h;
+    public void initConfig(){
+//        double H = Config.H;
+//        double h = Config.h;
+//        double H = getH();
+//        double h = geth();
+        String H = String.format("%.2f",getH());
+        String h = String.format("%.2f",geth());
+        String total = String.format("%.2f",getH() + geth());
+
         String str = "h:" + h +
                         "\nH:" + H +
-                        "\nH+h:" + (H + h);
+                        "\nH+h:" + total;
         txConfig.setText(str);
     }
 
@@ -417,14 +427,25 @@ public class MainActivity extends AppCompatActivity {
 
         if(isFirstUsing) {
             editor.putBoolean("isFirstUsing", false);
-            editor.putFloat("h",1.7f);
-            editor.putFloat("H",0f);
+            editor.putFloat("h",(float) Config.h);
+            editor.putFloat("H",(float) Config.H);
             editor.putInt("mis",100);
             editor.commit();
         }
 
         return isFirstUsing;
     }
+
+    private synchronized double getH() {
+        SharedPreferences setting = this.getSharedPreferences("setting", 0);
+        return setting.getFloat("H",(float) Config.H);
+    }
+
+    private synchronized double geth() {
+        SharedPreferences setting = this.getSharedPreferences("setting", 0);
+        return setting.getFloat("h",(float) Config.H);
+    }
+
 }
 
 

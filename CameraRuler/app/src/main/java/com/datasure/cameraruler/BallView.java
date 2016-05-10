@@ -104,11 +104,11 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         Rect clearRec = new Rect((int)(old.x-Radius),(int)(old.y-Radius),(int)(old.x+Radius),(int)(old.y+Radius));
         Canvas canvas = holder.lockCanvas(clearRec);
         //获取橡皮擦
-//        Paint clearPaint = new Paint();
-//        clearPaint.setAntiAlias(true);
-//        clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        Paint clearPaint = new Paint();
+        clearPaint.setAntiAlias(true);
+        clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         //执行清屏
-//        canvas.drawRect(clearRec, clearPaint);
+        canvas.drawRect(clearRec, clearPaint);
 
         //绘制新小球
         Paint paint = new Paint();

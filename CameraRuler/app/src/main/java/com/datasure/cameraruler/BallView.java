@@ -87,7 +87,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
                 PointF p = getFormatPointF(data);
 
                 drawBall(mHolder,oldPoint,p);
-                drawOutter(mHolder);
+
                 oldPoint = p;
             }
 
@@ -104,11 +104,11 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         Rect clearRec = new Rect((int)(old.x-Radius),(int)(old.y-Radius),(int)(old.x+Radius),(int)(old.y+Radius));
         Canvas canvas = holder.lockCanvas(clearRec);
         //获取橡皮擦
-        Paint clearPaint = new Paint();
-        clearPaint.setAntiAlias(true);
-        clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+//        Paint clearPaint = new Paint();
+//        clearPaint.setAntiAlias(true);
+//        clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         //执行清屏
-        canvas.drawRect(clearRec, clearPaint);
+//        canvas.drawRect(clearRec, clearPaint);
 
         //绘制新小球
         Paint paint = new Paint();
@@ -116,6 +116,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         canvas.drawCircle(fresh.x, fresh.y, Radius, paint);
         holder.unlockCanvasAndPost(canvas);
+        drawOutter(mHolder);
     }
 
 

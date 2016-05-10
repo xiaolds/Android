@@ -24,6 +24,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.datasure.orientation.DistanceFresher;
@@ -33,6 +34,8 @@ import com.datasure.setting.HeightFragment;
 import com.datasure.setting.MisFragment;
 import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton btnShowH;
     private TextView txHeight;
     private TextView txHeightTip;
+    private ImageView imageArrow;
+    private TextView txTip;
 
     //Orientation Sensor
     private OrientationWrapper ori;
@@ -85,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
         txDistance = (TextView) findViewById(R.id.id_tx_distance);              //显示距离
         btnShowH = (ImageButton) findViewById(R.id.id_btn_totalH);              //点击显示高度的按钮
         txHeightTip = (TextView) findViewById(R.id.id_tx_height_tip);           //
+        imageArrow = (ImageView) findViewById(R.id.id_image_arrows2);
+        txTip = (TextView) findViewById(R.id.id_tx_tips);
 
     }
 
@@ -105,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             //处理拍摄按钮
             case R.id.id_menu_capture:
-                //TODO
+                //保存照片
+                camera.takePicture(null, null, mPicture);
                 return true;
             case R.id.id_menu_mis:
                 MisFragment mis = new MisFragment();
@@ -242,6 +250,9 @@ public class MainActivity extends AppCompatActivity {
         txHeightTip.setVisibility(View.INVISIBLE);
         //TODO
         Config.setDistance(distanceFresher.getData());
+        //unshow tip
+        txTip.setVisibility(View.INVISIBLE);
+        imageArrow.setVisibility(View.INVISIBLE);
     }
 
     private void changeToStartCal() {
@@ -252,6 +263,10 @@ public class MainActivity extends AppCompatActivity {
         distanceFresher.stopListen();
         heightFresher.startListen();
         txHeightTip.setVisibility(View.VISIBLE);
+
+        //show tip
+        txTip.setVisibility(View.VISIBLE);
+        imageArrow.setVisibility(View.VISIBLE);
     }
 
     private void changeToGotHei() {
@@ -264,6 +279,9 @@ public class MainActivity extends AppCompatActivity {
         txHeightTip.setVisibility(View.VISIBLE);
         //TODO
         Config.setTotalH(heightFresher.getData());
+        //unshow tip
+        txTip.setVisibility(View.INVISIBLE);
+        imageArrow.setVisibility(View.INVISIBLE);
     }
 
     private void changeToInit() {
@@ -277,6 +295,9 @@ public class MainActivity extends AppCompatActivity {
         //TODO 暂时在这里进行设置Distance
         Config.setDistance(-1);
         Config.setTotalH(-1);
+        //unshow tip
+        txTip.setVisibility(View.INVISIBLE);
+        imageArrow.setVisibility(View.INVISIBLE);
     }
 
 

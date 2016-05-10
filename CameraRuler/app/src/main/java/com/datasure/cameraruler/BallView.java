@@ -47,7 +47,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         //开启绘制线程
         timer = new Timer();
-        timer.schedule(new BallDrawerTask(holder),0,30);
+        timer.schedule(new BallDrawerTask(holder),0,20);
     }
 
     @Override
@@ -101,11 +101,13 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         //先清除旧小球
 
         //获取画板
-        Rect clearRec = new Rect((int)(old.x-Radius),(int)(old.y-Radius),(int)(old.x+Radius),(int)(old.y+Radius));
+        float r = Radius + 3;
+//        Rect clearRec = new Rect((int)(old.x-r),(int)(old.y-r),(int)(old.x+r),(int)(old.y+r));
+        Rect clearRec = new Rect(0, 0, 288 ,96);
         Canvas canvas = holder.lockCanvas(clearRec);
         //获取橡皮擦
         Paint clearPaint = new Paint();
-        clearPaint.setAntiAlias(true);
+//        clearPaint.setAntiAlias(true);
         clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         //执行清屏
         canvas.drawRect(clearRec, clearPaint);
@@ -113,6 +115,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         //绘制新小球
         Paint paint = new Paint();
         paint.setColor(Color.BLUE);
+//        clearPaint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         canvas.drawCircle(fresh.x, fresh.y, Radius, paint);
         holder.unlockCanvasAndPost(canvas);

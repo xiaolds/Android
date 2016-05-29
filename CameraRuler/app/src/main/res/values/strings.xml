@@ -20,6 +20,8 @@
     <string name="menu_setting">设置高度</string>
     <string name="menu_modify_mis">修改基线</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="menu_height">测量高度</string>
+    <string name="menu_width">测量宽度</string>
 
     <!-- Strings related to Settings -->
 

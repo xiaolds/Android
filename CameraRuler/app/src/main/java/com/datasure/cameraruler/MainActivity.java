@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import com.datasure.orientation.DistanceFresher;
 import com.datasure.orientation.HeightFresher;
 import com.datasure.orientation.OrientationWrapper;
+import com.datasure.orientation.WidthFresher;
 import com.datasure.setting.HeightFragment;
 import com.datasure.setting.MisFragment;
 import com.datasure.util.Config;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView txDistance;
     private DistanceFresher distanceFresher;
     private HeightFresher heightFresher;
+    private WidthFresher widthFresher;
     private ImageButton btnShowH;
     private TextView txHeight;
     private TextView txHeightTip;
@@ -109,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+
+
         //处理
         switch (item.getItemId()) {
             //处理拍摄按钮
@@ -122,11 +127,21 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             //处理设置基线按钮
             case R.id.id_menu_setting:
-                /*Intent intent = new Intent(SettingsActivity.ACTION_SETTING);
-                startActivity(intent);
-                */
                 HeightFragment fragment1 = new HeightFragment();
                 fragment1.show(getSupportFragmentManager(),"HeightFragment");
+                return true;
+            //修改测量方式
+            case R.id.menu_switch_width:
+
+                //修改文字
+                if(Config.getModule_height()){
+                    item.setTitle("测量宽度");
+                    Config.setModule_height(false);
+                }
+                else{
+                    item.setTitle("测量高度");
+                    Config.setModule_height(true);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -155,9 +170,6 @@ public class MainActivity extends AppCompatActivity {
         BallView ballView = new BallView(this, ori);
         FrameLayout layout1 = (FrameLayout) findViewById(R.id.ball);
         layout1.addView(ballView);
-        /*BallView2 ballView2 = new BallView2(this,ori);
-        FrameLayout layout1 = (FrameLayout) findViewById(R.id.ball);
-        layout1.addView(ballView2);*/
 
         //get the Button and set ClickListener
         capture.setOnClickListener(new View.OnClickListener() {
@@ -187,6 +199,9 @@ public class MainActivity extends AppCompatActivity {
         heightFresher = new HeightFresher(txHeight, ori);
         heightFresher.initial();
 
+        widthFresher = new WidthFresher(txHeight,ori);
+        widthFresher.initial();
+
         changeToInit();
         //init config text
         initConfig();
@@ -197,10 +212,6 @@ public class MainActivity extends AppCompatActivity {
      *
      */
     public void initConfig(){
-//        double H = Config.H;
-//        double h = Config.h;
-//        double H = getH();
-//        double h = geth();
         String H = String.format("%.2f",getH());
         String h = String.format("%.2f",geth());
         String total = String.format("%.2f",getH() + geth());
@@ -228,15 +239,26 @@ public class MainActivity extends AppCompatActivity {
                     state = State.INITIAL;
                     changeToInit();
                 }
-                else if(btn.equals(btnShowH)){
+                else if(Config.getModule_height() && btn.equals(btnShowH)){
                     state = State.START_CAL_H;
+                    txHeightTip.setText("Height(m)");
                     changeToStartCal();
+                }
+                else if(!Config.getModule_height() && btn.equals(btnShowH)){
+                    state = State.START_CAL_H;
+                    txHeightTip.setText("Width(m)");
+                    changeToCalWidth();
                 }
                 break;
             case START_CAL_H:
-                if(btn.equals(capture)) {
+                if(Config.getModule_height() && btn.equals(capture)) {
                     state = State.GOT_HEI;
                     changeToGotHei();
+                }
+                else if (!Config.getModule_height() && btn.equals(capture)){
+                    state = State.GOT_HEI;
+                    changeToGotWidth();
+
                 }
                 break;
             case GOT_HEI:
@@ -250,15 +272,47 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void changeToCalWidth(){
+        capture.setBackgroundResource(R.mipmap.measure_shutter1);
+        txState.setText(R.string.tx_dis_start_calH);
+        txHeight.setVisibility(View.VISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.stopListen();
+        heightFresher.stopListen();
+        widthFresher.setIsX1Get(true);
+        txHeightTip.setVisibility(View.VISIBLE);
+    }
+
+    private void changeToGotWidth(){
+        capture.setBackgroundResource(R.mipmap.measure_shutter0);
+        txState.setText(R.string.tx_dis_gotH);
+        txHeight.setVisibility(View.VISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.stopListen();
+        widthFresher.stopListen();
+        heightFresher.stopListen();
+    }
+
     private void changeToGotDis(){
+
         capture.setBackgroundResource(R.mipmap.measure_shutter0);
         txState.setText(R.string.tx_dis_gotD);
         txHeight.setVisibility(View.INVISIBLE);
+
+        if(Config.getModule_height()){
+            btnShowH.setBackgroundResource(R.mipmap.button_height);
+        }
+        else{
+            btnShowH.setBackgroundResource(R.mipmap.button_width);
+            widthFresher.startListen();
+
+        }
         btnShowH.setVisibility(View.VISIBLE);
         distanceFresher.stopListen();
         heightFresher.stopListen();
+
         txHeightTip.setVisibility(View.INVISIBLE);
-        //TODO
+
         Config.setDistance(distanceFresher.getData());
         //unshow tip
         txTip.setVisibility(View.INVISIBLE);
@@ -301,6 +355,8 @@ public class MainActivity extends AppCompatActivity {
         btnShowH.setVisibility(View.INVISIBLE);
         distanceFresher.startListen();
         heightFresher.stopListen();
+        widthFresher.stopListen();
+        widthFresher.setIsX1Get(false);
         txHeightTip.setVisibility(View.INVISIBLE);
         //TODO 暂时在这里进行设置Distance
         Config.setDistance(-1);
@@ -331,6 +387,8 @@ public class MainActivity extends AppCompatActivity {
         distanceFresher.destroy();
         heightFresher.stopListen();
         heightFresher.destroy();
+        widthFresher.stopListen();
+        widthFresher.destroy();
         ori.destory();
         Log.e("MainActivity","onStop runned");
     }

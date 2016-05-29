@@ -10,4 +10,6 @@
         android:title="@string/menu_setting"/>
     <item android:id="@+id/id_menu_mis"
         android:title="@string/menu_modify_mis"/>
+    <item android:id="@+id/menu_switch_width"
+        android:title="@string/menu_height"></item>
 </menu>

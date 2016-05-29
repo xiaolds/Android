@@ -47,6 +47,18 @@ public class MathUtil {
         return Config.getTotalH();
     }
 
+    /**
+     * Retrive the width below
+     *
+     * @param beta the angle which phone move
+     * @return H1
+     */
+    public synchronized double calWidth(double beta) throws Exception {
+        if (Config.getDistance() < 0) throw new Exception("You must calculate the distance firstly!");
+
+        return Config.getDistance() * Math.abs(Math.tan(beta));
+    }
+
 
     /**
      * set the instance = null;

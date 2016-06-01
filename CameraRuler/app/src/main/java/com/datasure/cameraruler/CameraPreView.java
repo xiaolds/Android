@@ -27,6 +27,16 @@ public class CameraPreView extends SurfaceView
     private GestureDetector gesture;
     private Camera.Size cameSize;       //摄像头分辨率
 
+
+    private static final int NONE = 0x1;
+    private static final int ZOOM = 0x2;    //缩放模式
+//    private static final int ZOOM_SMALL = 0x3;    //缩放模式
+
+    private int mode = NONE;    //初始模式
+    private float oldDistance;  //原始距离
+    private static int zoomLevel = 0;
+
+
     public CameraPreView(Context context, Camera camera) {
         super(context);
         mCamera = camera;
@@ -113,39 +123,77 @@ public class CameraPreView extends SurfaceView
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //触摸的时候动态调整对焦区域
-        //获取对焦范围的方框
-        Rect focusRect = calculateTapArea(event.getRawX(), event.getRawY(), 1f);
-        //获取测光的方框
-        Rect meteringRect = calculateTapArea(event.getRawX(), event.getRawY(), 1f);
 
-        //获取Parameters
-        Camera.Parameters params = mCamera.getParameters();
-        params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        int type = event.getAction() & MotionEvent.ACTION_MASK;
+        //判断事件类型
+        switch (type) {
+            case MotionEvent.ACTION_DOWN:
+                mode = NONE;
+                this.onSingleTapUp(event);
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+                mode = NONE;
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                //第二根手指按下
+                mode = ZOOM;
+                oldDistance = getDistance(event.getX(0),event.getY(0), event.getX(1), event.getY(1));
+                break;
+            case MotionEvent.ACTION_MOVE:
+                //双指缩放，通过判断距离来实现
+                if(mode == ZOOM) {
+                    //判断新的位置的距离
+                    float distance = getDistance(event.getX(0),event.getY(0), event.getX(1), event.getY(1));
 
-        if (params.getMaxNumFocusAreas() > 0) {
-            List<Camera.Area> focusAreas = new ArrayList<Camera.Area>();
-            focusAreas.add(new Camera.Area(focusRect, 600));
-            params.setFocusAreas(focusAreas);
+                    if(distance>oldDistance){
+                        //扩大
+                        enlargeZoom();
+                        mCamera.startSmoothZoom(zoomLevel);
+                    }
+                    else if(distance < oldDistance){
+                        //缩小
+                        reduceZoom();
+                        mCamera.startSmoothZoom(zoomLevel);
+                    }
+                    oldDistance = distance;
+                }
+                else{
+                    //none
+                }
+                break;
+            default:break;
         }
-        if (params.getMaxNumMeteringAreas() > 0) {
-            List<Camera.Area> meteringAreas = new ArrayList<Camera.Area>();
-            meteringAreas.add(new Camera.Area(meteringRect, 600));
-            params.setMeteringAreas(meteringAreas);
-        }
 
-        mCamera.cancelAutoFocus();
-
-        mCamera.setParameters(params);
-
-        mCamera.autoFocus(new Camera.AutoFocusCallback() {
-            @Override
-            public void onAutoFocus(boolean success, Camera camera) {
-                Log.d("CameraPreview", "autoFocus Success~");
-            }
-        });
 
         return true;
+    }
+
+    //计算欧式几何距离
+    private float getDistance(float x1, float y1, float x2, float y2){
+
+        double result = Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
+
+        return (float)result;
+    }
+
+    //扩大Zoom级别
+    private void enlargeZoom(){
+
+        zoomLevel++;
+        int maxZoomLevel = mCamera.getParameters().getMaxZoom();
+        if(zoomLevel >= maxZoomLevel) {
+            zoomLevel = maxZoomLevel;
+        }
+    }
+
+    //缩小Zoom级别
+    private void reduceZoom(){
+        zoomLevel--;
+        if(zoomLevel <= 0) {
+            zoomLevel = 0;
+        }
+
     }
 
 
@@ -199,8 +247,41 @@ public class CameraPreView extends SurfaceView
     }
 
     @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
+    public boolean onSingleTapUp(MotionEvent event) {
+
+        //触摸的时候动态调整对焦区域
+        //获取对焦范围的方框
+        Rect focusRect = calculateTapArea(event.getRawX(), event.getRawY(), 1f);
+        //获取测光的方框
+        Rect meteringRect = calculateTapArea(event.getRawX(), event.getRawY(), 1f);
+
+        //获取Parameters
+        Camera.Parameters params = mCamera.getParameters();
+        params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+
+        if (params.getMaxNumFocusAreas() > 0) {
+            List<Camera.Area> focusAreas = new ArrayList<Camera.Area>();
+            focusAreas.add(new Camera.Area(focusRect, 600));
+            params.setFocusAreas(focusAreas);
+        }
+        if (params.getMaxNumMeteringAreas() > 0) {
+            List<Camera.Area> meteringAreas = new ArrayList<Camera.Area>();
+            meteringAreas.add(new Camera.Area(meteringRect, 600));
+            params.setMeteringAreas(meteringAreas);
+        }
+
+        mCamera.cancelAutoFocus();
+
+        mCamera.setParameters(params);
+
+        mCamera.autoFocus(new Camera.AutoFocusCallback() {
+            @Override
+            public void onAutoFocus(boolean success, Camera camera) {
+                Log.d("CameraPreview", "autoFocus Success~");
+            }
+        });
+
+        return true;
     }
 
     @Override

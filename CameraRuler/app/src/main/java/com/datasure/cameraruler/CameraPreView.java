@@ -146,17 +146,22 @@ public class CameraPreView extends SurfaceView
                     //判断新的位置的距离
                     float distance = getDistance(event.getX(0),event.getY(0), event.getX(1), event.getY(1));
 
-                    if(distance>oldDistance){
+                    if(distance - oldDistance > 15f){
                         //扩大
                         enlargeZoom();
                         mCamera.startSmoothZoom(zoomLevel);
+                        oldDistance = distance;
                     }
-                    else if(distance < oldDistance){
+                    else if(distance - oldDistance < -15f){
                         //缩小
                         reduceZoom();
                         mCamera.startSmoothZoom(zoomLevel);
+                        oldDistance = distance;
                     }
-                    oldDistance = distance;
+                    else{
+//                        oldDistance = oldDistance;
+                    }
+
                 }
                 else{
                     //none

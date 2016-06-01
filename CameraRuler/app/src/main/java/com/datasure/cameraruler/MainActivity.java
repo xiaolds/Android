@@ -1,27 +1,24 @@
 package com.datasure.cameraruler;
 
-import android.app.Activity;
+
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+
 import android.hardware.Camera;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -36,10 +33,6 @@ import com.datasure.setting.HeightFragment;
 import com.datasure.setting.MisFragment;
 import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
-import com.datasure.view.BallView2;
-
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -85,6 +78,16 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
 
+
+/*        //打印界面的大小
+        DisplayMetrics metric = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metric);
+
+        int width = metric.widthPixels;  // 宽度（PX）
+        int height = metric.heightPixels;  // 高度（PX）
+        Log.e("MainActivity Width",""+width);
+        Log.e("MainActivity Height",""+height);*/
+
         //get the instance of Orientation sensor
         ori = new OrientationWrapper(this);
         capture = (ImageButton) findViewById(R.id.id_btn_capture);              //拍摄按钮
@@ -108,11 +111,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //菜单点击
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-
 
         //处理
         switch (item.getItemId()) {
@@ -166,6 +166,12 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout layout = (FrameLayout) findViewById(R.id.camera_preview);
         layout.addView(preView);
 
+        //打印Log
+        int width = layout.getWidth();
+        int height = layout.getHeight();
+        Log.e("MainActivity Width", "" + width);
+        Log.e("MainActivity Height", "" + height);
+
         //添加小球
         BallView ballView = new BallView(this, ori);
         FrameLayout layout1 = (FrameLayout) findViewById(R.id.ball);
@@ -177,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //get Distance & change state of Button
                 changeState(v);
-//                camera.takePicture(null, null, mPicture);     //capture TODO
             }
         });
 
@@ -194,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
         distanceFresher = new DistanceFresher(txDistance, ori);
         //start listen and fresh the textView
         distanceFresher.initial();
-//        distanceFresher.startListen();
 
         heightFresher = new HeightFresher(txHeight, ori);
         heightFresher.initial();
@@ -272,6 +276,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    //与Width相关的两个状态转换函数
     private void changeToCalWidth(){
         capture.setBackgroundResource(R.mipmap.measure_shutter1);
         txState.setText(R.string.tx_dis_start_calH);
@@ -293,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
         heightFresher.stopListen();
     }
 
+    //与高度测量相关的几个函数
     private void changeToGotDis(){
 
         capture.setBackgroundResource(R.mipmap.measure_shutter0);
@@ -314,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
         txHeightTip.setVisibility(View.INVISIBLE);
 
         Config.setDistance(distanceFresher.getData());
-        //unshow tip
+        //cancel tip
         txTip.setVisibility(View.INVISIBLE);
         imageArrow.setVisibility(View.INVISIBLE);
     }
@@ -341,9 +348,9 @@ public class MainActivity extends AppCompatActivity {
         distanceFresher.stopListen();
         heightFresher.stopListen();
         txHeightTip.setVisibility(View.VISIBLE);
-        //TODO
+
         Config.setTotalH(heightFresher.getData());
-        //unshow tip
+        //cancel tip
         txTip.setVisibility(View.INVISIBLE);
         imageArrow.setVisibility(View.INVISIBLE);
     }
@@ -361,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
         //TODO 暂时在这里进行设置Distance
         Config.setDistance(-1);
         Config.setTotalH(-1);
-        //unshow tip
+        //cancel tip
         txTip.setVisibility(View.INVISIBLE);
         imageArrow.setVisibility(View.INVISIBLE);
     }
@@ -443,6 +450,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
 
+            //store the picture
             String fileName = "DICM" + System.currentTimeMillis() + ".jpg";
             File pictureFile = new File(Environment.getExternalStorageDirectory(),
                     fileName);

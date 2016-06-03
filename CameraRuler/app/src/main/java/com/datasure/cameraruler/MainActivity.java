@@ -78,16 +78,6 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
 
-
-/*        //打印界面的大小
-        DisplayMetrics metric = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metric);
-
-        int width = metric.widthPixels;  // 宽度（PX）
-        int height = metric.heightPixels;  // 高度（PX）
-        Log.e("MainActivity Width",""+width);
-        Log.e("MainActivity Height",""+height);*/
-
         //get the instance of Orientation sensor
         ori = new OrientationWrapper(this);
         capture = (ImageButton) findViewById(R.id.id_btn_capture);              //拍摄按钮
@@ -165,12 +155,6 @@ public class MainActivity extends AppCompatActivity {
         //get Layout
         FrameLayout layout = (FrameLayout) findViewById(R.id.camera_preview);
         layout.addView(preView);
-
-        //打印Log
-        int width = layout.getWidth();
-        int height = layout.getHeight();
-        Log.e("MainActivity Width", "" + width);
-        Log.e("MainActivity Height", "" + height);
 
         //添加小球
         BallView ballView = new BallView(this, ori);

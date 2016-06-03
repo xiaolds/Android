@@ -10,6 +10,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,36 +42,51 @@ public class CameraPreView extends SurfaceView
     public CameraPreView(Context context, Camera camera) {
         super(context);
         mCamera = camera;
-        //获取界面的分辨率
+    /*    //获取界面的分辨率
         cameSize = getResolution();
-        Log.e("Preview Size","Width:" + cameSize.width +"\nHeight:" +cameSize.height);
-
+        */
 
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
         mHolder = getHolder();
         mHolder.addCallback(this);
 
-
         //实例化GestureDetector
         gesture = new GestureDetector(context,this);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // We purposely disregard child measurements because act as a
+        // wrapper to a SurfaceView that centers the camera preview instead
+        // of stretching it.
+        final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+        final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+        setMeasuredDimension(width, height);
+
+        List<Camera.Size> sizeList = mCamera.getParameters().getSupportedPreviewSizes();
+
+        Camera.Size s = getOptimalPreviewSize(sizeList,width,height);
+        cameSize = s;
+
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        Log.e("SurfaceView Size","Width:" + this.getWidth() +"\nHeight:" +this.getHeight());
 
         //打开相机预览界面
         try{
             mCamera.setPreviewDisplay(holder);
             Camera.Parameters parameters = mCamera.getParameters();
             //设置分辨率
+//            cameSize = getResolution();
             parameters.setPreviewSize(cameSize.width,cameSize.height);
             mCamera.startPreview();
             Log.e("CameraView","camera created!");
         }
         catch (IOException e){
-            Log.d("surfaceCreated", "Error Settion camera preview: " + e.getMessage());
+            Log.d("surfaceCreated", "Error Setting camera preview: " + e.getMessage());
         }
     }
 
@@ -91,6 +108,7 @@ public class CameraPreView extends SurfaceView
             mCamera.setPreviewDisplay(mHolder);
             Camera.Parameters parameters = mCamera.getParameters();
             //设置分辨率
+//            cameSize = getResolution();
             parameters.setPreviewSize(cameSize.width,cameSize.height);
             mCamera.startPreview();
 
@@ -146,13 +164,13 @@ public class CameraPreView extends SurfaceView
                     //判断新的位置的距离
                     float distance = getDistance(event.getX(0),event.getY(0), event.getX(1), event.getY(1));
 
-                    if(distance - oldDistance > 15f){
+                    if(distance - oldDistance > 40f){
                         //扩大
                         enlargeZoom();
                         mCamera.startSmoothZoom(zoomLevel);
                         oldDistance = distance;
                     }
-                    else if(distance - oldDistance < -15f){
+                    else if(distance - oldDistance < -40f){
                         //缩小
                         reduceZoom();
                         mCamera.startSmoothZoom(zoomLevel);
@@ -229,13 +247,48 @@ public class CameraPreView extends SurfaceView
     }
 
 
-    //获取摄像头的Size，推荐使用1280*720; 16:9
+    //获取摄像头的Size，推荐使用1920*1080; 16:9
     public Camera.Size getResolution() {
         Camera.Parameters params = mCamera.getParameters();
-        List<Camera.Size> sizeList = params.getSupportedPictureSizes();
-        Camera.Size s = sizeList.get(3);
+//        List<Camera.Size> sizeList = params.getSupportedPictureSizes();
+        List<Camera.Size> sizeList = params.getSupportedPreviewSizes();
 
+        Camera.Size s = getOptimalPreviewSize(sizeList,this.getWidth(),this.getHeight());
+        Log.e("optimalSize:","Width:"+s.width+"\n"+"Height:"+s.height);
         return s;
+    }
+
+    private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio = (double) w / h;
+        if (sizes == null) return null;
+
+        Camera.Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        // Try to find an size match aspect ratio and size
+        for (Camera.Size size : sizes) {
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        // Cannot find the one match the aspect ratio, ignore the requirement
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Camera.Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
     }
 
 

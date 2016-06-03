@@ -47,6 +47,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         //开启绘制线程
+        drawOutter(holder);
         timer = new Timer();
         timer.schedule(new BallDrawerTask(holder),0,20);
     }
@@ -80,20 +81,17 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         @Override
         public void run() {
             //绘制图形
-            if(count++ < 2){
+            if(count++ < 3){
                 drawOutter(mHolder);
             }
             float data = wrapper.getResult()[1];
 
-            if(checkData(data)){
-
-                //get Data
-                PointF p = getFormatPointF(data);
+            //get Data
+            PointF p = getFormatPointF(data);
 //                drawOutter(mHolder);
-                drawBall(mHolder,oldPoint,p);
+            drawBall(mHolder,oldPoint,p);
 
-                oldPoint = p;
-            }
+            oldPoint = p;
 
         }
     }
@@ -145,12 +143,6 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawLine(32 * 6, 0, 32 *3 * 2, 32 *3,paint);
         //刷新提交
         holder.unlockCanvasAndPost(canvas);
-    }
-
-    //判断数据的有效性，并根据精确度分析是否该刷新小球的位置
-    private boolean checkData(float data) {
-        //TODO
-        return true;
     }
 
     private PointF getFormatPointF(float data) {

@@ -1,6 +1,7 @@
 package com.datasure.cameraruler;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -24,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.datasure.orientation.DistanceFresher;
 import com.datasure.orientation.HeightFresher;
@@ -165,6 +167,12 @@ public class MainActivity extends AppCompatActivity {
         capture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //检测倾斜度防止误操作
+                float result = ori.getResult()[1];
+                if(result > Math.PI/8 || result < -Math.PI/8){
+                    Toast.makeText(getApplicationContext(),"请将手机拿正",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //get Distance & change state of Button
                 changeState(v);
             }

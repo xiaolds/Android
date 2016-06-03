@@ -1,6 +1,7 @@
 package com.datasure.cameraruler;
 
 
+import android.accounts.Account;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -70,6 +71,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         //holder
         private SurfaceHolder mHolder;
         private PointF oldPoint;
+        private long count = 0;
 
         public BallDrawerTask(SurfaceHolder holder){
             this.mHolder = holder;
@@ -78,14 +80,16 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         @Override
         public void run() {
             //绘制图形
-//            drawOutter(mHolder);
+            if(count++ < 2){
+                drawOutter(mHolder);
+            }
             float data = wrapper.getResult()[1];
 
             if(checkData(data)){
 
                 //get Data
                 PointF p = getFormatPointF(data);
-                drawOutter(mHolder);
+//                drawOutter(mHolder);
                 drawBall(mHolder,oldPoint,p);
 
                 oldPoint = p;
@@ -119,7 +123,7 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         canvas.drawCircle(fresh.x, fresh.y, Radius, paint);
         holder.unlockCanvasAndPost(canvas);
-
+        
     }
 
 

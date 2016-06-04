@@ -2,9 +2,9 @@ package com.datasure.orientation;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.TextView;
 
+import com.datasure.util.Config;
 import com.datasure.util.MathUtil;
 
 import java.util.Timer;
@@ -20,6 +20,7 @@ public class HeightFresher extends Fresher {
     private Timer timerForTalH;
     private double data;
     private double lastData;
+    private double alpha;
 
     private TextView disText;
     private OrientationWrapper ori;
@@ -53,7 +54,8 @@ public class HeightFresher extends Fresher {
             try{
 
                 if(!isStart) return;
-                data = util.calTotalH(ori.getResult()[2]);
+                alpha = ori.getResult()[2];
+                data = util.calTotalH(alpha);
                 if(Math.abs(lastData - data) > Fresher.ACCURACY){
                     Message message = new Message();
                     message.what = 0x2;
@@ -77,13 +79,25 @@ public class HeightFresher extends Fresher {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x2:   //fresh
-                    String string = String.format("%.2f",data);
-                    Log.e("FormatString:", string);
-                    disText.setText(string);
+                    showData(disText);
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    @Override
+    protected void showData(TextView txView) {
+        double result = data*Config.getMis()/100;
+        String string = null;
+        if(result < 0){
+            string = "NaN";
+        }
+        else{
+            string = String.format(util.getFormatStringFormAccuracy(Config.getACCURACY()),result);
+        }
+
+        txView.setText(string);
     }
 }

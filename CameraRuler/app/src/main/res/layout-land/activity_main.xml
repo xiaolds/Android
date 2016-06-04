@@ -7,8 +7,8 @@
     >
     <FrameLayout
         android:id="@+id/camera_preview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         >
 
 
@@ -17,12 +17,40 @@
     <!--添加中心十字准星-->
     <!--android:layout_gravity="center" -->
     <ImageView
+        android:id="@+id/cross"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/cross_measure"
         android:layout_gravity="center"
-
         android:layout_centerInParent="true" />
+
+    <FrameLayout
+        android:id="@+id/ball"
+        android:layout_width="96dp"
+        android:layout_height="32dp"
+        android:layout_below="@id/cross"
+        android:layout_alignLeft="@id/cross"
+        />
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="150dp"
+        android:id="@+id/id_image_arrows2"
+        android:layout_above="@id/cross"
+        android:layout_centerHorizontal="true"
+        android:background="@mipmap/arrows"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:id="@+id/id_tx_tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="顺着箭头移动手机"
+        android:textSize="30dp"
+        android:textColor="@color/colorPrimary"
+        android:visibility="invisible"
+        />
 
     <TextView
         android:id="@+id/id_tx_capture_state"

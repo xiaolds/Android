@@ -7,9 +7,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by Lids on 2016/4/7.
@@ -41,6 +38,7 @@ public class OrientationWrapper {
 
     private Sensor accelerometer;   //accelerometer sensor，加速度传感器
     private Sensor magnetic;        //magnetic sensor,地磁传感器
+    private static OrientationWrapper wrapper = null;
 
 
     /**
@@ -109,7 +107,7 @@ public class OrientationWrapper {
             manager.getRotationMatrix(R, null, acceleValue, mageticValue);
             manager.getOrientation(R, result);
             if(((currentTime = System.currentTimeMillis()) - oldTime) > 1000){
-                printLog(result);
+//                printLog(result);
                 oldTime = currentTime;
             }
 
@@ -149,9 +147,9 @@ public class OrientationWrapper {
     }
 
     private void printLog(float[] result){
-        Log.e("The result of sensor X:", " " + result[0]);
-        Log.e("The result of sensor Y:", " " + result[1]);
-        Log.e("The result of sensor Z:", " " + result[2]);
+        Log.e("The result of sensor Z:", " " + result[0]);
+        Log.e("The result of sensor X:", " " + result[1]);
+        Log.e("The result of sensor Y:", " " + result[2]);
     }
 
 }

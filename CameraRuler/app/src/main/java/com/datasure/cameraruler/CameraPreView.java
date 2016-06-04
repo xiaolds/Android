@@ -25,7 +25,8 @@ public class CameraPreView extends SurfaceView
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private GestureDetector gesture;
-    private Camera.Size cameSize;       //摄像头分辨率
+    private Camera.Size previewSize;       //摄像头分辨率
+    private Camera.Size pictureSize;       //成像分辨率
 
 
     private static final int NONE = 0x1;
@@ -58,12 +59,20 @@ public class CameraPreView extends SurfaceView
         // of stretching it.
         final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
         final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+
+        Log.e("Measured Width",""+width);
+        Log.e("Measured Height",""+height);
+
         setMeasuredDimension(width, height);
 
+        //计算最佳的预览尺寸
         List<Camera.Size> sizeList = mCamera.getParameters().getSupportedPreviewSizes();
+        previewSize = getOptimalPreviewSize(sizeList,width,height);
+        Log.e("PreviewSize","Width:"+ previewSize.width+"\n"+"Height:"+ previewSize.height);
 
-        Camera.Size s = getOptimalPreviewSize(sizeList,width,height);
-        cameSize = s;
+        sizeList = mCamera.getParameters().getSupportedPictureSizes();
+        pictureSize = getOptimalPictureSize(sizeList,width,height);
+        Log.e("PictureSize","Width:"+ pictureSize.width+"\n"+"Height:"+ pictureSize.height);
 
     }
 
@@ -80,8 +89,9 @@ public class CameraPreView extends SurfaceView
             mCamera.setPreviewDisplay(holder);
             Camera.Parameters parameters = mCamera.getParameters();
             //设置分辨率
-//            cameSize = getResolution();
-            parameters.setPreviewSize(cameSize.width,cameSize.height);
+            parameters.setPreviewSize(previewSize.width, previewSize.height);
+            parameters.setPictureSize(pictureSize.width, pictureSize.height);
+            mCamera.setParameters(parameters);
             mCamera.startPreview();
             Log.e("CameraView","camera created!");
         }
@@ -115,8 +125,9 @@ public class CameraPreView extends SurfaceView
             mCamera.setPreviewDisplay(mHolder);
             Camera.Parameters parameters = mCamera.getParameters();
             //设置分辨率
-//            cameSize = getResolution();
-            parameters.setPreviewSize(cameSize.width,cameSize.height);
+            parameters.setPreviewSize(previewSize.width, previewSize.height);
+            parameters.setPictureSize(pictureSize.width, pictureSize.height);
+            mCamera.setParameters(parameters);
             mCamera.startPreview();
 
         }
@@ -258,18 +269,6 @@ public class CameraPreView extends SurfaceView
         return x;
     }
 
-
-    //获取摄像头的Size，推荐使用1920*1080; 16:9
-    public Camera.Size getResolution() {
-        Camera.Parameters params = mCamera.getParameters();
-//        List<Camera.Size> sizeList = params.getSupportedPictureSizes();
-        List<Camera.Size> sizeList = params.getSupportedPreviewSizes();
-
-        Camera.Size s = getOptimalPreviewSize(sizeList,this.getWidth(),this.getHeight());
-        Log.e("optimalSize:","Width:"+s.width+"\n"+"Height:"+s.height);
-        return s;
-    }
-
     /**
      * 获取最佳预览界面分辨率
      * @param sizes 设备所支持的分辨率列表
@@ -304,6 +303,40 @@ public class CameraPreView extends SurfaceView
                 if (Math.abs(size.height - targetHeight) < minDiff) {
                     optimalSize = size;
                     minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
+    }
+
+    //寻找最佳的相片比例，在合适比例里找最大的
+    private Camera.Size getOptimalPictureSize(List<Camera.Size> sizes, int w, int h) {
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio = (double) w / h;
+        if (sizes == null) return null;
+
+        Camera.Size optimalSize = null;
+        double maxDiff = Double.MIN_VALUE;
+
+        int targetHeight = h;
+
+        // Try to find an size match aspect ratio and size
+        for (Camera.Size size : sizes) {
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+            if (size.height - targetHeight > maxDiff) {
+                optimalSize = size;
+                maxDiff = size.height - targetHeight;
+            }
+        }
+
+        // Cannot find the one match the aspect ratio, ignore the requirement
+        if (optimalSize == null) {
+            maxDiff = Double.MAX_VALUE;
+            for (Camera.Size size : sizes) {
+                if (size.height - targetHeight > maxDiff) {
+                    optimalSize = size;
+                    maxDiff = size.height - targetHeight;
                 }
             }
         }

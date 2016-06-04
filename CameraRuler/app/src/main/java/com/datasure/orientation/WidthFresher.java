@@ -20,8 +20,6 @@ public class WidthFresher extends Fresher {
     private float angle;
     //左侧长度
     private double x1;
-    //右侧距离
-    private double x2;
     //需要刷新的控件
     private TextView disText;
     //传感器
@@ -97,7 +95,7 @@ public class WidthFresher extends Fresher {
                 }
             }
             catch (Exception e){
-                //不做处理
+                //ignore
             }
 
         }
@@ -107,11 +105,6 @@ public class WidthFresher extends Fresher {
             return super.cancel();
         }
     };
-
-
-    private void flushLeft(){
-
-    }
 
 
 
@@ -136,6 +129,12 @@ public class WidthFresher extends Fresher {
                     break;
             }
         }
+    }
+
+    @Override
+    protected void showData(TextView txView) {
+        //none
+        throw new UnsupportedOperationException();
     }
 
 

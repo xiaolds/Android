@@ -1,9 +1,5 @@
 package com.datasure.util;
 
-import android.content.SharedPreferences;
-
-import com.datasure.cameraruler.MainActivity;
-
 /**
  * Created by xiaolds on 2016/4/10.
  */

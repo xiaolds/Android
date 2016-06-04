@@ -66,7 +66,6 @@ public class BallView extends SurfaceView implements SurfaceHolder.Callback {
     /**
      * 使用单独的线程刷新小球界面
      */
-
     class BallDrawerTask extends TimerTask {
 
         //holder

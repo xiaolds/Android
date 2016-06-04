@@ -1,7 +1,6 @@
 package com.datasure.cameraruler;
 
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -13,7 +12,6 @@ import android.hardware.Camera;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,20 +60,20 @@ public class MainActivity extends AppCompatActivity {
     //Orientation Sensor
     private OrientationWrapper ori;
 
-    //State
+    //Initial State
     private static State state = State.INITIAL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //判断是否为第一次使用软件，是的话初始化数据库
         isFirstUsing();
 
         //设置全屏，隐藏ActionBar
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getSupportActionBar().hide();
-//        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0f0000ff")));
         //强制横屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
@@ -88,56 +86,10 @@ public class MainActivity extends AppCompatActivity {
         txHeight = (TextView) findViewById(R.id.id_txt_height);                 //显示高度的TextView
         txDistance = (TextView) findViewById(R.id.id_tx_distance);              //显示距离
         btnShowH = (ImageButton) findViewById(R.id.id_btn_totalH);              //点击显示高度的按钮
-        txHeightTip = (TextView) findViewById(R.id.id_tx_height_tip);           //
-        imageArrow = (ImageView) findViewById(R.id.id_image_arrows2);
+        txHeightTip = (TextView) findViewById(R.id.id_tx_height_tip);           //显示的高度提示
+        imageArrow = (ImageView) findViewById(R.id.id_image_arrows2);           //界面中心十字准星
         txTip = (TextView) findViewById(R.id.id_tx_tips);
 
-    }
-
-    //创建菜单
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_activity_actions,menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    //菜单点击
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        //处理
-        switch (item.getItemId()) {
-            //处理拍摄按钮
-            case R.id.id_menu_capture:
-                //保存照片
-                camera.takePicture(null, null, mPicture);
-                return true;
-            case R.id.id_menu_mis:
-                MisFragment mis = new MisFragment();
-                mis.show(getSupportFragmentManager(), "MisFragment");
-                return true;
-            //处理设置基线按钮
-            case R.id.id_menu_setting:
-                HeightFragment fragment1 = new HeightFragment();
-                fragment1.show(getSupportFragmentManager(),"HeightFragment");
-                return true;
-            //修改测量方式
-            case R.id.menu_switch_width:
-
-                //修改文字
-                if(Config.getModule_height()){
-                    item.setTitle("测量宽度");
-                    Config.setModule_height(false);
-                }
-                else{
-                    item.setTitle("测量高度");
-                    Config.setModule_height(true);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -203,20 +155,7 @@ public class MainActivity extends AppCompatActivity {
         initConfig();
     }
 
-    /**
-     * init config
-     *
-     */
-    public void initConfig(){
-        String H = String.format("%.2f",getH());
-        String h = String.format("%.2f",geth());
-        String total = String.format("%.2f",getH() + geth());
 
-        String str = "h:" + h +
-                        "\nH:" + H +
-                        "\nH+h:" + total;
-        txConfig.setText(str);
-    }
 
     /**
      * change the Button capture's state
@@ -267,104 +206,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-
-    //与Width相关的两个状态转换函数
-    private void changeToCalWidth(){
-        capture.setBackgroundResource(R.mipmap.measure_shutter1);
-        txState.setText(R.string.tx_dis_start_calH);
-        txHeight.setVisibility(View.VISIBLE);
-        btnShowH.setVisibility(View.INVISIBLE);
-        distanceFresher.stopListen();
-        heightFresher.stopListen();
-        widthFresher.setIsX1Get(true);
-        txHeightTip.setVisibility(View.VISIBLE);
-    }
-
-    private void changeToGotWidth(){
-        capture.setBackgroundResource(R.mipmap.measure_shutter0);
-        txState.setText(R.string.tx_dis_gotH);
-        txHeight.setVisibility(View.VISIBLE);
-        btnShowH.setVisibility(View.INVISIBLE);
-        distanceFresher.stopListen();
-        widthFresher.stopListen();
-        heightFresher.stopListen();
-    }
-
-    //与高度测量相关的几个函数
-    private void changeToGotDis(){
-
-        capture.setBackgroundResource(R.mipmap.measure_shutter0);
-        txState.setText(R.string.tx_dis_gotD);
-        txHeight.setVisibility(View.INVISIBLE);
-
-        if(Config.getModule_height()){
-            btnShowH.setBackgroundResource(R.mipmap.button_height);
-        }
-        else{
-            btnShowH.setBackgroundResource(R.mipmap.button_width);
-            widthFresher.startListen();
-
-        }
-        btnShowH.setVisibility(View.VISIBLE);
-        distanceFresher.stopListen();
-        heightFresher.stopListen();
-
-        txHeightTip.setVisibility(View.INVISIBLE);
-
-        Config.setDistance(distanceFresher.getData());
-        //cancel tip
-        txTip.setVisibility(View.INVISIBLE);
-        imageArrow.setVisibility(View.INVISIBLE);
-    }
-
-    private void changeToStartCal() {
-        capture.setBackgroundResource(R.mipmap.measure_shutter1);
-        txState.setText(R.string.tx_dis_start_calH);
-        txHeight.setVisibility(View.VISIBLE);
-        btnShowH.setVisibility(View.INVISIBLE);
-        distanceFresher.stopListen();
-        heightFresher.startListen();
-        txHeightTip.setVisibility(View.VISIBLE);
-
-        //show tip
-        txTip.setVisibility(View.VISIBLE);
-        imageArrow.setVisibility(View.VISIBLE);
-    }
-
-    private void changeToGotHei() {
-        capture.setBackgroundResource(R.mipmap.measure_shutter0);
-        txState.setText(R.string.tx_dis_gotH);
-        txHeight.setVisibility(View.VISIBLE);
-        btnShowH.setVisibility(View.INVISIBLE);
-        distanceFresher.stopListen();
-        heightFresher.stopListen();
-        txHeightTip.setVisibility(View.VISIBLE);
-
-        Config.setTotalH(heightFresher.getData());
-        //cancel tip
-        txTip.setVisibility(View.INVISIBLE);
-        imageArrow.setVisibility(View.INVISIBLE);
-    }
-
-    private void changeToInit() {
-        capture.setBackgroundResource(R.mipmap.measure_shutter1);
-        txState.setText(R.string.tx_dis_init);
-        txHeight.setVisibility(View.INVISIBLE);
-        btnShowH.setVisibility(View.INVISIBLE);
-        distanceFresher.startListen();
-        heightFresher.stopListen();
-        widthFresher.stopListen();
-        widthFresher.setIsX1Get(false);
-        txHeightTip.setVisibility(View.INVISIBLE);
-        //TODO 暂时在这里进行设置Distance
-        Config.setDistance(-1);
-        Config.setTotalH(-1);
-        //cancel tip
-        txTip.setVisibility(View.INVISIBLE);
-        imageArrow.setVisibility(View.INVISIBLE);
-    }
-
 
     @Override
     protected void onPause() {
@@ -472,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     /**
-     * 判断是否是第一次使用软件，是的话初始化几个值
+     * 判断是否是第一次使用软件，是的话初始化数据库
      * @return
      */
     private boolean isFirstUsing() {
@@ -502,6 +343,170 @@ public class MainActivity extends AppCompatActivity {
     private synchronized double geth() {
         SharedPreferences setting = this.getSharedPreferences("setting", 0);
         return setting.getFloat("h",(float) Config.H);
+    }
+
+
+    /******************改变状态相关的函数************/
+    //与Width相关的两个状态转换函数
+    private void changeToCalWidth(){
+        capture.setBackgroundResource(R.mipmap.measure_shutter1);
+        txState.setText(R.string.tx_dis_start_calH);
+        txHeight.setVisibility(View.VISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.stopListen();
+        heightFresher.stopListen();
+        widthFresher.setIsX1Get(true);
+        txHeightTip.setVisibility(View.VISIBLE);
+    }
+
+    private void changeToGotWidth(){
+        capture.setBackgroundResource(R.mipmap.measure_shutter0);
+        txState.setText(R.string.tx_dis_gotH);
+        txHeight.setVisibility(View.VISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.stopListen();
+        widthFresher.stopListen();
+        heightFresher.stopListen();
+    }
+
+    //与高度测量相关的几个函数
+    private void changeToGotDis(){
+
+        capture.setBackgroundResource(R.mipmap.measure_shutter0);
+        txState.setText(R.string.tx_dis_gotD);
+        txHeight.setVisibility(View.INVISIBLE);
+
+        if(Config.getModule_height()){
+            btnShowH.setBackgroundResource(R.mipmap.button_height);
+        }
+        else{
+            btnShowH.setBackgroundResource(R.mipmap.button_width);
+            widthFresher.startListen();
+
+        }
+        btnShowH.setVisibility(View.VISIBLE);
+        distanceFresher.stopListen();
+        heightFresher.stopListen();
+
+        txHeightTip.setVisibility(View.INVISIBLE);
+
+        Config.setDistance(distanceFresher.getData());
+        //cancel tip
+        txTip.setVisibility(View.INVISIBLE);
+        imageArrow.setVisibility(View.INVISIBLE);
+    }
+
+    private void changeToStartCal() {
+        capture.setBackgroundResource(R.mipmap.measure_shutter1);
+        txState.setText(R.string.tx_dis_start_calH);
+        txHeight.setVisibility(View.VISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.stopListen();
+        heightFresher.startListen();
+        txHeightTip.setVisibility(View.VISIBLE);
+
+        //show tip
+        txTip.setVisibility(View.VISIBLE);
+        imageArrow.setVisibility(View.VISIBLE);
+    }
+
+    private void changeToGotHei() {
+        capture.setBackgroundResource(R.mipmap.measure_shutter0);
+        txState.setText(R.string.tx_dis_gotH);
+        txHeight.setVisibility(View.VISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.stopListen();
+        heightFresher.stopListen();
+        txHeightTip.setVisibility(View.VISIBLE);
+
+        Config.setTotalH(heightFresher.getData());
+        //cancel tip
+        txTip.setVisibility(View.INVISIBLE);
+        imageArrow.setVisibility(View.INVISIBLE);
+    }
+
+    private void changeToInit() {
+        capture.setBackgroundResource(R.mipmap.measure_shutter1);
+        txState.setText(R.string.tx_dis_init);
+        txHeight.setVisibility(View.INVISIBLE);
+        btnShowH.setVisibility(View.INVISIBLE);
+        distanceFresher.startListen();
+        heightFresher.stopListen();
+        widthFresher.stopListen();
+        widthFresher.setIsX1Get(false);
+        txHeightTip.setVisibility(View.INVISIBLE);
+        Config.setDistance(-1);
+        Config.setTotalH(-1);
+        //cancel tip
+        txTip.setVisibility(View.INVISIBLE);
+        imageArrow.setVisibility(View.INVISIBLE);
+    }
+
+
+
+
+
+    /**
+     * init config
+     *
+     */
+    public void initConfig(){
+        String H = String.format("%.2f",getH());
+        String h = String.format("%.2f",geth());
+        String total = String.format("%.2f",getH() + geth());
+
+        String str = "h:" + h +
+                "\nH:" + H +
+                "\nH+h:" + total;
+        txConfig.setText(str);
+    }
+
+    /********************菜单相关函数*************/
+
+    //创建菜单
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_actions,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    //菜单点击事件
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        //处理
+        switch (item.getItemId()) {
+            //处理拍摄按钮
+            case R.id.id_menu_capture:
+                //保存照片
+                camera.takePicture(null, null, mPicture);
+                return true;
+            case R.id.id_menu_mis:
+                MisFragment mis = new MisFragment();
+                mis.show(getSupportFragmentManager(), "MisFragment");
+                return true;
+            //处理设置基线按钮
+            case R.id.id_menu_setting:
+                HeightFragment fragment1 = new HeightFragment();
+                fragment1.show(getSupportFragmentManager(),"HeightFragment");
+                return true;
+            //修改测量方式
+            case R.id.menu_switch_width:
+
+                //修改文字
+                if(Config.getModule_height()){
+                    item.setTitle("测量宽度");
+                    Config.setModule_height(false);
+                }
+                else{
+                    item.setTitle("测量高度");
+                    Config.setModule_height(true);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }

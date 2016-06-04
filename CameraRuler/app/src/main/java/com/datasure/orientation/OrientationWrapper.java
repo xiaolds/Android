@@ -7,11 +7,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import com.datasure.cameraruler.MainActivity;
-
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by Lids on 2016/4/7.

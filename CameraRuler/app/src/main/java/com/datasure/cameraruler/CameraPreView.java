@@ -10,11 +10,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -42,9 +40,6 @@ public class CameraPreView extends SurfaceView
     public CameraPreView(Context context, Camera camera) {
         super(context);
         mCamera = camera;
-    /*    //获取界面的分辨率
-        cameSize = getResolution();
-        */
 
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -55,6 +50,7 @@ public class CameraPreView extends SurfaceView
         gesture = new GestureDetector(context,this);
     }
 
+    //计算预览框的大小
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // We purposely disregard child measurements because act as a
@@ -71,6 +67,10 @@ public class CameraPreView extends SurfaceView
 
     }
 
+    /**
+     * 预览界面创建
+     * @param holder 通过Holder操作SurfaceView
+     */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.e("SurfaceView Size","Width:" + this.getWidth() +"\nHeight:" +this.getHeight());
@@ -90,6 +90,13 @@ public class CameraPreView extends SurfaceView
         }
     }
 
+    /**
+     * 画面变化后的回调函数
+     * @param holder
+     * @param format
+     * @param width
+     * @param height
+     */
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
@@ -129,6 +136,7 @@ public class CameraPreView extends SurfaceView
 
     }
 
+    //注册手势
     public GestureDetector getGesture() {
         return gesture;
     }
@@ -176,9 +184,7 @@ public class CameraPreView extends SurfaceView
                         mCamera.startSmoothZoom(zoomLevel);
                         oldDistance = distance;
                     }
-                    else{
-//                        oldDistance = oldDistance;
-                    }
+                    else{}
 
                 }
                 else{
@@ -219,7 +225,6 @@ public class CameraPreView extends SurfaceView
 
     }
 
-
     //计算对焦与测光区域
     private Rect calculateTapArea(float x, float y, float coefficient) {
         float focusAreaSize = 100;
@@ -236,6 +241,13 @@ public class CameraPreView extends SurfaceView
                 Math.round(rectF.right), Math.round(rectF.bottom));
     }
 
+    /**
+     * 确保对焦区域不会超过预览区域
+     * @param x 手指点击区域坐标
+     * @param min 预览最大区域
+     * @param max 预览最小区域
+     * @return 返回有效值
+     */
     private int clamp(int x, int min, int max) {
         if (x > max) {
             return max;
@@ -258,6 +270,13 @@ public class CameraPreView extends SurfaceView
         return s;
     }
 
+    /**
+     * 获取最佳预览界面分辨率
+     * @param sizes 设备所支持的分辨率列表
+     * @param w 容纳预览界面的容器的宽度
+     * @param h 容纳预览界面的容器的高度
+     * @return 返回最佳的尺寸
+     */
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio = (double) w / h;
@@ -291,19 +310,7 @@ public class CameraPreView extends SurfaceView
         return optimalSize;
     }
 
-
-    /****** getter and setter**********/
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
+    //单击事件，触摸对焦
     @Override
     public boolean onSingleTapUp(MotionEvent event) {
 
@@ -355,6 +362,19 @@ public class CameraPreView extends SurfaceView
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         return false;
+    }
+
+
+    /****** getter and setter**********/
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
     }
 
 

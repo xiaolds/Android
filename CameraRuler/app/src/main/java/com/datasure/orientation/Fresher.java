@@ -1,14 +1,6 @@
 package com.datasure.orientation;
 
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.widget.TextView;
-
-import com.datasure.util.MathUtil;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by xiaolds on 2016/4/10.
@@ -37,5 +29,5 @@ public abstract class Fresher {
         isStart = false;
     }
 
-
+    protected abstract void showData(TextView txView);
 }

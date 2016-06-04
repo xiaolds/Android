@@ -27,17 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.datasure.setting.SettingsActivity"
-            android:label="@string/title_activity_settings">
-
-            <intent-filter>
-                <action android:name="com.datasure.setting.SettingsActivity.SETTING"/>
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-
-        </activity>
     </application>
 
 </manifest>

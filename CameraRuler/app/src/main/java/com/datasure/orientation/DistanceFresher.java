@@ -2,7 +2,6 @@ package com.datasure.orientation;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.datasure.util.Config;
@@ -19,8 +18,9 @@ public class DistanceFresher extends Fresher{
 
     private TextView disText;                       //需要刷新的控件
     private MathUtil util = MathUtil.getInstance();
-    private double data;
+    private double data;            //计算出的距离数据
     private double lastData;
+    private double alpha;   //角度信息
 
     private OrientationWrapper ori;
 
@@ -41,7 +41,8 @@ public class DistanceFresher extends Fresher{
         @Override
         public void run() {
             //check the distance
-            data = util.calDistance(ori.getResult()[2]);
+            alpha = ori.getResult()[2];
+            data = util.calDistance(alpha);
             if(isStart && Math.abs(lastData - data) > ACCURACY){
                 Message message = new Message();
                 message.what = 0x1;
@@ -69,6 +70,7 @@ public class DistanceFresher extends Fresher{
         timerForDis.cancel();
     }
 
+
     public double getData(){
         return data;
     }
@@ -83,14 +85,26 @@ public class DistanceFresher extends Fresher{
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0x1:   //fresh
-                    String string = String.format(util.getFormatStringFormAccuracy(Config.getACCURACY()),data*Config.getMis()/100);
-//                    Log.e("FormatString:", string);
-                    disText.setText(string);
+                    showData(disText);
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    @Override
+    protected void showData(TextView txView) {
+        String string = null;
+        if(alpha>(Math.PI/2 - 0.1) || alpha <-(Math.PI/2-0.1)){
+            string = "MAX";
+        }
+        else{
+            double result = data*Config.getMis()/100;
+            string = String.format(util.getFormatStringFormAccuracy(Config.getACCURACY()),result);
+        }
+
+        txView.setText(string);
     }
 
 }

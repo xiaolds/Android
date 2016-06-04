@@ -276,6 +276,8 @@ public class MainActivity extends AppCompatActivity {
         return preView.getGesture().onTouchEvent(event);
     }
 
+    private static final String DST_FOLDER_NAME = "CameraRuler";
+
     /**
      * the callback when tack picture
      */
@@ -283,34 +285,51 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
 
+            String path = initPath();
+
             //store the picture
             String fileName = "DICM" + System.currentTimeMillis() + ".jpg";
-            File pictureFile = new File(Environment.getExternalStorageDirectory(),
-                    fileName);
-
-            if(pictureFile == null){
-                return;
-            }
+            String jpegName = path + "/" + fileName;
 
             //use bitmap cache
             final Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
 
             try{
-                FileOutputStream fos = new FileOutputStream(pictureFile);
+                FileOutputStream fos = new FileOutputStream(jpegName);
                 bm.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+                fos.flush();
                 fos.close();
                 camera.stopPreview();
                 camera.startPreview();
+                Toast.makeText(MainActivity.this, "拍照成功，照片保存在"+jpegName+"文件之中！", Toast.LENGTH_SHORT).show();
             }
             catch (FileNotFoundException e){
                 e.printStackTrace();
+                Toast.makeText(MainActivity.this, "拍照失败!未找到文件夹", Toast.LENGTH_LONG).show();
             }
             catch (IOException ioe){
-                ioe.printStackTrace();
+                Toast.makeText(MainActivity.this, "拍照失败！"+ioe.toString(), Toast.LENGTH_LONG).show();
             }
 
         }
     };
+
+    /**初始化保存路径
+     * @return
+     */
+    private static   String storagePath = "";
+    private static final File parentPath = Environment.getExternalStorageDirectory();
+    private static String initPath(){
+        if(storagePath.equals("")){
+            storagePath = parentPath.getAbsolutePath()+"/" + DST_FOLDER_NAME;
+            File f = new File(storagePath);
+            if(!f.exists()){
+                f.mkdirs();
+            }
+        }
+        return storagePath;
+    }
 
     /**
      * 判断是否是第一次使用软件，是的话初始化数据库
@@ -480,6 +499,7 @@ public class MainActivity extends AppCompatActivity {
             //处理拍摄按钮
             case R.id.id_menu_capture:
                 //保存照片
+                Toast.makeText(MainActivity.this,"拍摄中，请稍后...",Toast.LENGTH_SHORT).show();
                 camera.takePicture(null, null, mPicture);
                 return true;
             case R.id.id_menu_mis:

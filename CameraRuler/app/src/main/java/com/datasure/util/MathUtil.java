@@ -30,7 +30,7 @@ public class MathUtil {
      * @return H1
      */
     public double calDistance(double zAangle) {
-        double phoneH = Config.h + Config.H - Config.inaccr;
+        double phoneH = Config.h * Config.ratio + Config.H;
         return phoneH * Math.tan(Math.abs(zAangle));
     }
 
@@ -42,7 +42,7 @@ public class MathUtil {
      */
     public synchronized double calTotalH(double beta) throws Exception {
         if (Config.getDistance() < 0) throw new Exception("You must calculate the distance firstly!");
-        double phoneH = Config.h + Config.H - Config.inaccr;
+        double phoneH = Config.h*Config.ratio + Config.H;
         Config.setTotalH(phoneH + Config.getDistance() * Math.tan(Math.abs(beta) - Math.PI/2));
         return Config.getTotalH();
     }

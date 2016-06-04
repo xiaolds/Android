@@ -5,7 +5,7 @@ package com.datasure.util;
  */
 public class Config {
 
-    public static double inaccr = 0.30;
+    public static final double ratio = (7-1.5)/7;
     public static double H = 0;
     public static double h = 1.72;             //person's height
 

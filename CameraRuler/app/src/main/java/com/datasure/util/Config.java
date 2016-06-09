@@ -13,7 +13,7 @@ public class Config {
     private static double totalH = -1;              //the Height of building
     private static double ACCURACY = 0.01;          //高度跟距离的精确度
     private static double frequencyOfBallFresh = 10;    //每秒10次,小球刷新频率
-    private static float mis = 100;
+    private static int mis = 100;
     private static boolean module_height = true;
 
     public static synchronized void setModule_height(boolean b){
@@ -48,11 +48,11 @@ public class Config {
         Config.ACCURACY = accuracy;
     }
 
-    public static synchronized void setMis(float mis){
+    public static synchronized void setMis(int mis){
         Config.mis = mis;
     }
 
-    public static synchronized float getMis(){
+    public static synchronized int getMis(){
         return Config.mis;
     }
 }

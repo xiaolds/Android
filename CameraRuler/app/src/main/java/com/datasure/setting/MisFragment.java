@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ import com.datasure.util.Config;
 public class MisFragment extends DialogFragment {
 
     private EditText mis;
+    public static final String TAG = "MisFragment";
 
     public MisFragment() {
     }
@@ -41,6 +43,9 @@ public class MisFragment extends DialogFragment {
         //get the EditText
         mis = (EditText) view.findViewById(R.id.id_edit_mis);
         SharedPreferences setting = getActivity().getSharedPreferences("setting", 0);
+
+        //Print Log
+        Log.e(TAG,""+setting.getInt("mis",100));
         mis.setText(String.valueOf(setting.getInt("mis",100)));
 
         //inflate fragment_height.xml
@@ -53,9 +58,10 @@ public class MisFragment extends DialogFragment {
                         SharedPreferences.Editor editor = setting.edit();
 
                         //set mis
-                        editor.putFloat("mis", Float.valueOf(mis.getText().toString()));
+                        editor.putInt("mis", Integer.valueOf(mis.getText().toString()));
                         editor.commit();
-                        Config.setMis(Float.valueOf(mis.getText().toString()));
+                        //flush the data of mis in Config Class
+                        Config.setMis(Integer.valueOf(mis.getText().toString()));
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {

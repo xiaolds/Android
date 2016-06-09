@@ -344,6 +344,7 @@ public class MainActivity extends AppCompatActivity {
         isFirstUsing = setting.getBoolean("isFirstUsing",true);
 
         if(isFirstUsing) {
+            //设置为非第一次使用
             editor.putBoolean("isFirstUsing", false);
             editor.putFloat("h",(float) Config.h);
             editor.putFloat("H",(float) Config.H);
